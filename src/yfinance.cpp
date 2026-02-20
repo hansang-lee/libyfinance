@@ -1,3 +1,4 @@
+#include <ctime>
 #include <iostream>
 
 #include <curl/curl.h>
@@ -13,14 +14,26 @@ void yFinance::close() {
     curl_global_cleanup();
 }
 
-std::shared_ptr<StockData> yFinance::getStockInfo(const std::string& ticker, const std::string& interval,
+static time_t parseDateToTimestamp(const std::string& date) {
+    std::tm tm = {};
+    if (strptime(date.c_str(), "%Y-%m-%d", &tm) == nullptr) {
+        return 0;
+    }
+    tm.tm_isdst = 0;
+    return timegm(&tm);
+}
+
+std::shared_ptr<StockInfo> yFinance::getStockInfo(const std::string& ticker, const std::string& interval,
                                                   const std::string& range) {
     const auto fetched = fetch(std::string(url_base_) + ticker + "?interval=" + interval + "&range=" + range);
     if (fetched.empty()) {
         return nullptr;
     }
 
-    auto data = std::make_shared<StockData>();
+    const auto data = std::make_shared<StockInfo>();
+    if (!data) {
+        return nullptr;
+    }
 
     try {
         const auto parsed = nlohmann::json::parse(fetched);
@@ -33,88 +46,42 @@ std::shared_ptr<StockData> yFinance::getStockInfo(const std::string& ticker, con
 
         data->ticker = ticker;
 
-        /**
-         * @note CURRENCY
-         * @example "USD", "KRW", etc.
-         */
-        if (meta.contains("currency") && !meta["currency"].is_null()) {
+        if (meta.contains("currency")) {
             data->currency = meta["currency"];
         }
 
-        /**
-         * @note EXCHANGE-NAME
-         * @example "NMS", "NYE", "KSC", etc.
-         */
-        if (meta.contains("exchangeName") && !meta["exchangeName"].is_null()) {
+        if (meta.contains("exchangeName")) {
             data->exchangeName = meta["exchangeName"];
         }
 
-        /**
-         * @note INSTRUMENT-TYPE
-         * @example "EQUITY", "ETF", "INDEX", etc.
-         */
         if (meta.contains("instrumentType")) {
             data->instrumentType = meta["instrumentType"];
         }
 
-        /**
-         * @note REGULAR-MARKET-PRICE
-         * @example 264.35 (Double)
-         */
         if (meta.contains("regularMarketPrice")) {
             data->regularMarketPrice = meta["regularMarketPrice"];
         }
 
-        /**
-         * @note CHART-PREVIOUS-CLOSE
-         * @example 263.88 (Double)
-         */
         if (meta.contains("chartPreviousClose")) {
             data->chartPreviousClose = meta["chartPreviousClose"];
         }
 
-        /**
-         * @note FIRST-TRADE-DATE
-         * @example 345479400 (Unix timestamp)
-         */
         if (meta.contains("firstTradeDate")) {
             data->firstTradeDate = meta["firstTradeDate"];
         }
 
-        /**
-         * @note GMT-OFFSET
-         * @example -18000 (Seconds)
-         */
         if (meta.contains("gmtoffset")) {
             data->gmtoffset = meta["gmtoffset"];
         }
 
-        /**
-         * @note TIMEZONE
-         * @example "EST", "KST", etc.
-         */
         if (meta.contains("timezone")) {
             data->timezone = meta["timezone"];
         }
 
-        /**
-         * @note TIMESTAMP
-         * @example [1708324800, 1708328400, ...]
-         */
         if (result.contains("timestamp")) {
-            data->timestamps = result["timestamp"].get<std::vector<long long>>();
+            data->timestamps = result["timestamp"].get<std::vector<int64_t>>();
         }
 
-        /**
-         * @note QUOTE
-         * @example {
-         *  "open": [264.35, 264.35, 264.35, 264.35, 264.35],
-         *  "high": [264.35, 264.35, 264.35, 264.35, 264.35],
-         *  "low": [264.35, 264.35, 264.35, 264.35, 264.35],
-         *  "close": [264.35, 264.35, 264.35, 264.35, 264.35],
-         *  "volume": [264.35, 264.35, 264.35, 264.35, 264.35]
-         * }
-         */
         if (result.contains("indicators") && result["indicators"].contains("quote")) {
             const auto& quote = result["indicators"]["quote"][0];
             if (quote.contains("open")) {
@@ -130,17 +97,155 @@ std::shared_ptr<StockData> yFinance::getStockInfo(const std::string& ticker, con
                 data->close = quote["close"].get<std::vector<double>>();
             }
             if (quote.contains("volume")) {
-                data->volume = quote["volume"].get<std::vector<long long>>();
+                data->volume = quote["volume"].get<std::vector<int64_t>>();
             }
         }
     } catch (const nlohmann::json::parse_error& e) {
-        std::cerr << e.what() << std::endl;
+        std::cerr << "JSON parse error: " << e.what() << std::endl;
     }
 
     return data;
 }
 
-std::string yFinance::fetch(const std::string& url) {
+std::shared_ptr<StockInfo> yFinance::getStockInfo(const std::string& ticker, const std::string& startDate,
+                                                  const std::string& endDate, const std::string& interval) {
+    auto p1 = parseDateToTimestamp(startDate);
+    auto p2 = parseDateToTimestamp(endDate);
+
+    if (p1 == -1 || p2 == -1) {
+        return nullptr;
+    }
+
+    p2 += 86400;
+
+    const std::string url = std::string(url_base_) + ticker + "?period1=" + std::to_string(p1)
+                          + "&period2=" + std::to_string(p2) + "&interval=" + interval;
+
+    const auto fetched = fetch(url);
+    if (fetched.empty()) {
+        return nullptr;
+    }
+
+    const auto data = std::make_shared<StockInfo>();
+    if (!data) {
+        return nullptr;
+    }
+
+    try {
+        const auto parsed = nlohmann::json::parse(fetched);
+        if (!parsed.contains("chart") || !parsed["chart"].contains("result") || parsed["chart"]["result"].is_null()) {
+            return nullptr;
+        }
+
+        const auto& result = parsed["chart"]["result"][0];
+        const auto& meta   = result["meta"];
+
+        data->ticker = ticker;
+
+        if (meta.contains("currency")) {
+            data->currency = meta["currency"];
+        }
+
+        if (meta.contains("exchangeName")) {
+            data->exchangeName = meta["exchangeName"];
+        }
+
+        if (meta.contains("instrumentType")) {
+            data->instrumentType = meta["instrumentType"];
+        }
+
+        if (meta.contains("regularMarketPrice")) {
+            data->regularMarketPrice = meta["regularMarketPrice"];
+        }
+
+        if (meta.contains("chartPreviousClose")) {
+            data->chartPreviousClose = meta["chartPreviousClose"];
+        }
+
+        if (meta.contains("firstTradeDate")) {
+            data->firstTradeDate = meta["firstTradeDate"];
+        }
+
+        if (meta.contains("gmtoffset")) {
+            data->gmtoffset = meta["gmtoffset"];
+        }
+
+        if (meta.contains("timezone")) {
+            data->timezone = meta["timezone"];
+        }
+
+        if (result.contains("timestamp")) {
+            data->timestamps = result["timestamp"].get<std::vector<int64_t>>();
+        }
+
+        if (result.contains("indicators") && result["indicators"].contains("quote")) {
+            const auto& quote = result["indicators"]["quote"][0];
+            if (quote.contains("open")) {
+                data->open = quote["open"].get<std::vector<double>>();
+            }
+            if (quote.contains("high")) {
+                data->high = quote["high"].get<std::vector<double>>();
+            }
+            if (quote.contains("low")) {
+                data->low = quote["low"].get<std::vector<double>>();
+            }
+            if (quote.contains("close")) {
+                data->close = quote["close"].get<std::vector<double>>();
+            }
+            if (quote.contains("volume")) {
+                data->volume = quote["volume"].get<std::vector<int64_t>>();
+            }
+        }
+    } catch (const nlohmann::json::parse_error& e) {
+        std::cerr << "JSON parse error: " << e.what() << std::endl;
+    }
+
+    return data;
+}
+
+std::shared_ptr<FearAndGreedInfo> yFinance::getFearAndGreedIndex() {
+    const auto fetched = fetch(std::string(cnn_url_base_), true);
+    if (fetched.empty()) {
+        return nullptr;
+    }
+
+    const auto data = std::make_shared<FearAndGreedInfo>();
+    if (!data) {
+        return nullptr;
+    }
+
+    try {
+        const auto parsed = nlohmann::json::parse(fetched);
+        if (!parsed.contains("fear_and_greed")) {
+            return nullptr;
+        }
+
+        const auto& fng = parsed["fear_and_greed"];
+
+        data->score         = fng.value("score", 0.0);
+        data->rating        = fng.value("rating", "");
+        data->timestamp     = fng.value("timestamp", "");
+        data->previousClose = fng.value("previous_close", 0.0);
+        data->previousWeek  = fng.value("previous_1_week", 0.0);
+        data->previousMonth = fng.value("previous_1_month", 0.0);
+        data->previousYear  = fng.value("previous_1_year", 0.0);
+
+        if (parsed.contains("fear_and_greed_historical") && parsed["fear_and_greed_historical"].contains("data")) {
+            for (const auto& item : parsed["fear_and_greed_historical"]["data"]) {
+                data->timestamps.push_back(static_cast<int64_t>(item.value("x", 0.0) / 1000.0));
+                data->scores.push_back(item.value("y", 0.0));
+                data->ratings.push_back(item.value("rating", ""));
+            }
+        }
+    } catch (const nlohmann::json::parse_error& e) {
+        std::cerr << "JSON parse error: " << e.what() << std::endl;
+        return nullptr;
+    }
+
+    return data;
+}
+
+std::string yFinance::fetch(const std::string& url, bool is_cnn) {
     CURL*    curl = nullptr;
     CURLcode res  = CURLE_OK;
 
@@ -153,9 +258,20 @@ std::string yFinance::fetch(const std::string& url) {
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &buffer);
         curl_easy_setopt(curl, CURLOPT_USERAGENT,
                          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
-                         "Chrome/58.0.3029.110 Safari/537.3");
+                         "Chrome/120.0.0.0 Safari/537.36");
 
-        res = curl_easy_perform(curl);
+        if (is_cnn) {
+            struct curl_slist* headers = nullptr;
+            headers = curl_slist_append(headers, "Referer: https://www.cnn.com/markets/fear-and-greed");
+            headers = curl_slist_append(headers, "Accept: application/json");
+            curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+            res = curl_easy_perform(curl);
+            curl_slist_free_all(headers);
+        } else {
+            res = curl_easy_perform(curl);
+        }
+
         if (res != CURLE_OK) {
             std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
         }

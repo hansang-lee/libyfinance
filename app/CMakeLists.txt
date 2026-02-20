@@ -17,4 +17,5 @@ macro(BUILD_APP "NAME")
   )
 endmacro()
 
-BUILD_APP(fetch)
+BUILD_APP(fng)
+BUILD_APP(stock)

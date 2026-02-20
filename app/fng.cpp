@@ -1,4 +1,3 @@
-#include <ctime>
 #include <functional>
 #include <iomanip>
 #include <iostream>
@@ -25,30 +24,21 @@ inline std::string formatTime(const int64_t timestamp) {
 
 void printHeader() {
     // clang-format off
-    std::clog
-        << std::setw(20) << "Date"
-        << std::setw(12) << "Open"
-        << std::setw(12) << "High"
-        << std::setw(12) << "Low"
-        << std::setw(12) << "Close"
-        << std::setw(15) << "Volume"
+    std::clog << std::left
+        << std::setw(20) << "(Date)"
+        << std::setw(9) << "(Score)"
+        << std::setw(15) << "(Rating)"
+        << "\n-"
         << std::endl;
     // clang-format on
 }
 
-int main(int argc, char* argv[]) {
-    /* parse arguments */
-    const auto ticker   = (argc > 1) ? argv[1] : "^IXIC";
-    const auto interval = (argc > 2) ? argv[2] : "1d";
-    const auto range    = (argc > 3) ? argv[3] : "1mo";
-
+int main() {
     yFinance::init();
-
     Defer _cleanup([] { yFinance::close(); });
 
-    /* get stock info */
-    const auto data = yFinance::getStockInfo(ticker, interval, range);
-    if (data->timestamps.empty()) {
+    const auto data = yFinance::getFearAndGreedIndex();
+    if (!data) {
         return 1;
     }
 
@@ -56,14 +46,11 @@ int main(int argc, char* argv[]) {
 
     for (std::size_t i = 0; i < data->timestamps.size(); i++) {
         // clang-format off
-        std::clog
+        std::clog << std::left
             << std::setw(20) << formatTime(data->timestamps[i])
             << std::fixed << std::setprecision(2)
-            << std::setw(12) << data->open[i]
-            << std::setw(12) << data->high[i]
-            << std::setw(12) << data->low[i]
-            << std::setw(12) << data->close[i]
-            << std::setw(15) << data->volume[i]
+            << std::setw(9) << data->scores[i]
+            << std::setw(15) << data->ratings[i]
             << std::endl;
         // clang-format on
     }
