@@ -10,6 +10,11 @@ macro(BUILD_APP "NAME")
     ${APP} PRIVATE
       yfinance::yfinance
   )
+  target_include_directories(
+    ${APP} PRIVATE
+      ${CMAKE_SOURCE_DIR}/lib/sma_crossover
+      ${CMAKE_SOURCE_DIR}/lib/rsi
+  )
   set_target_properties(
     ${APP} PROPERTIES
       OUTPUT_NAME ${NAME}
@@ -19,3 +24,4 @@ endmacro()
 
 BUILD_APP(fng)
 BUILD_APP(stock)
+BUILD_APP(backtest)

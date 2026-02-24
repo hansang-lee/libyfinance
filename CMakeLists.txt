@@ -18,12 +18,18 @@ find_package(CURL REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
   src/yfinance.cpp
+  src/backtest/backtest_engine.cpp
+  lib/sma_crossover/sma_crossover.cpp
+  lib/rsi/rsi_strategy.cpp
 )
 
 target_include_directories(${PROJECT_NAME}
   PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include>
+  PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/sma_crossover
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib/rsi
 )
 
 target_link_libraries(${PROJECT_NAME}
