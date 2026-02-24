@@ -22,10 +22,14 @@ exists() {
 format() {
     if exists "$1"; then
         find "$1" \
-            -iname *.h \
-            -o -iname *.hpp \
-            -o -iname *.cpp \
-            -o -iname *.c \
+            -not -path "*/build/*" \
+            -not -path "*/.git/*" \
+            \( \
+                -iname *.h \
+                -o -iname *.hpp \
+                -o -iname *.cpp \
+                -o -iname *.c \
+            \) \
             | xargs clang-format -i
     fi
 }
