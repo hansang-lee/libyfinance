@@ -2,6 +2,7 @@
 #include <functional>
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 
 #include "backtest/backtest_engine.hpp"
 #include "rsi_strategy.hpp"
@@ -83,12 +84,108 @@ void printTrades(const BacktestResult& result, const StockInfo& data) {
     }
 }
 
-int main() {
+void printComparison(const std::vector<BacktestResult>& results) {
+    const int nameW = 22;
+    const int colW  = 22;
+    const int lineW = nameW + colW * static_cast<int>(results.size());
+
+    // Header
+    // clang-format off
+    std::clog << "\n"
+        << std::string(lineW, '=') << "\n"
+        << "  STRATEGY COMPARISON" << "\n"
+        << std::string(lineW, '=') << "\n"
+        << std::left << std::setw(nameW) << "";
+    // clang-format on
+    for (const auto& r : results) {
+        std::clog << std::left << std::setw(colW) << r.strategyName;
+    }
+    std::clog << "\n" << std::string(lineW, '-') << std::endl;
+
+    // Initial Capital
+    std::clog << std::left << std::setw(nameW) << "Initial Capital";
+    for (const auto& r : results) {
+        std::ostringstream oss;
+        oss << "$" << std::fixed << std::setprecision(2) << r.initialCapital;
+        std::clog << std::setw(colW) << oss.str();
+    }
+    std::clog << std::endl;
+
+    // Final Capital
+    std::clog << std::left << std::setw(nameW) << "Final Capital";
+    for (const auto& r : results) {
+        std::ostringstream oss;
+        oss << "$" << std::fixed << std::setprecision(2) << r.finalCapital;
+        std::clog << std::setw(colW) << oss.str();
+    }
+    std::clog << "\n" << std::string(lineW, '-') << std::endl;
+
+    // Total Return
+    std::clog << std::left << std::setw(nameW) << "Total Return";
+    for (const auto& r : results) {
+        std::ostringstream oss;
+        oss << std::fixed << std::setprecision(2) << r.totalReturnPct << "%";
+        std::clog << std::setw(colW) << oss.str();
+    }
+    std::clog << std::endl;
+
+    // Win Rate
+    std::clog << std::left << std::setw(nameW) << "Win Rate";
+    for (const auto& r : results) {
+        const auto wins =
+            std::count_if(r.trades.begin(), r.trades.end(), [](const Trade& t) { return t.returnPct > 0; });
+        std::ostringstream oss;
+        oss << std::fixed << std::setprecision(1) << (r.winRate * 100.0) << "% (" << wins << "/" << r.trades.size()
+            << ")";
+        std::clog << std::setw(colW) << oss.str();
+    }
+    std::clog << std::endl;
+
+    // Max Drawdown
+    std::clog << std::left << std::setw(nameW) << "Max Drawdown";
+    for (const auto& r : results) {
+        std::ostringstream oss;
+        oss << std::fixed << std::setprecision(2) << r.maxDrawdownPct << "%";
+        std::clog << std::setw(colW) << oss.str();
+    }
+    std::clog << std::endl;
+
+    // Sharpe Ratio
+    std::clog << std::left << std::setw(nameW) << "Sharpe Ratio";
+    for (const auto& r : results) {
+        std::ostringstream oss;
+        oss << std::fixed << std::setprecision(2) << r.sharpeRatio;
+        std::clog << std::setw(colW) << oss.str();
+    }
+    std::clog << std::endl;
+
+    // Trades
+    std::clog << std::left << std::setw(nameW) << "Trades";
+    for (const auto& r : results) {
+        std::clog << std::setw(colW) << r.trades.size();
+    }
+    std::clog << "\n" << std::string(lineW, '-') << std::endl;
+
+    // SCORE
+    std::clog << std::left << std::setw(nameW) << ">>> SCORE";
+    for (const auto& r : results) {
+        std::ostringstream oss;
+        oss << std::fixed << std::setprecision(2) << r.score << " / 100";
+        std::clog << std::setw(colW) << oss.str();
+    }
+    std::clog << "\n" << std::string(lineW, '=') << "\n" << std::endl;
+}
+
+int main(int argc, char* argv[]) {
     yFinance::init();
     Defer _cleanup([] { yFinance::close(); });
 
-    // Fetch 5 years of SPY daily data
-    const auto data = yFinance::getStockInfo("SPY", "2021-01-01", "2026-01-01", "1d");
+    const auto TICKER   = ((argc > 1) ? argv[1] : "SPY");
+    const auto START    = ((argc > 2) ? argv[2] : "2021-01-01");
+    const auto END      = ((argc > 3) ? argv[3] : "2026-01-01");
+    const auto INTERVAL = ((argc > 4) ? argv[4] : "1d");
+
+    const auto data = yFinance::getStockInfo(TICKER, START, END, INTERVAL);
     if (!data) {
         std::cerr << "Failed to fetch stock data." << std::endl;
         return 1;
@@ -109,6 +206,9 @@ int main() {
     const auto  rsiResult = engine.run(rsi, *data);
     printSummary(rsiResult, *data);
     printTrades(rsiResult, *data);
+
+    // Comparison table
+    printComparison({smaResult, rsiResult});
 
     return 0;
 }
