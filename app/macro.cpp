@@ -3,8 +3,31 @@
 #include <iostream>
 #include <string>
 
+#include <unistd.h>
+
 #include "macro_scorer.hpp"
 #include "yfinance.hpp"
+
+/**
+ * @brief Resolve a path relative to the executable's directory.
+ */
+static std::string resolveFromExe(const std::string& relativePath) {
+    char    buf[4096];
+    ssize_t len = readlink("/proc/self/exe", buf, sizeof(buf) - 1);
+    if (len <= 0) {
+        return relativePath;
+    }
+    buf[len] = '\0';
+    std::string exePath(buf);
+    for (int i = 0; i < 4; ++i) {
+        auto pos = exePath.rfind('/');
+        if (pos == std::string::npos) {
+            return relativePath;
+        }
+        exePath = exePath.substr(0, pos);
+    }
+    return exePath + "/" + relativePath;
+}
 
 struct Defer {
     std::function<void()> f;
@@ -26,7 +49,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    std::string configPath = "config/macro_allocation.json";
+    std::string configPath = resolveFromExe("config/macro_allocation.json");
     if (argc > 1) {
         configPath = argv[1];
     }

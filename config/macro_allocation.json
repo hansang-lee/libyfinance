@@ -1,59 +1,78 @@
 {
-  "scoring_weights": {
-    "growth": 0.25,
-    "inflation": 0.20,
-    "liquidity": 0.20,
-    "sentiment": 0.15,
-    "risk": 0.20
-  },
-  "regime_thresholds": {
-    "expansion": {
-      "composite_min": 60,
-      "inflation_max": 65
+    "scoring_weights": {
+        "growth": 0.25,
+        "inflation": 0.20,
+        "liquidity": 0.20,
+        "sentiment": 0.15,
+        "risk": 0.20
     },
-    "overheating": {
-      "composite_min": 45,
-      "inflation_min": 65
+    "regime_thresholds": {
+        "expansion": {
+            "composite_min": 60,
+            "inflation_max": 65
+        },
+        "overheating": {
+            "composite_min": 45,
+            "inflation_min": 65
+        },
+        "slowdown": {
+            "composite_min": 25
+        },
+        "recession": {
+            "composite_min": 0
+        }
     },
-    "slowdown": {
-      "composite_min": 25
+    "allocation": {
+        "expansion": {
+            "stocks": 70,
+            "gold": 5,
+            "metals": 10,
+            "bonds": 5,
+            "usd": 5,
+            "krw": 5
+        },
+        "overheating": {
+            "stocks": 40,
+            "gold": 15,
+            "metals": 10,
+            "bonds": 20,
+            "usd": 10,
+            "krw": 5
+        },
+        "slowdown": {
+            "stocks": 30,
+            "gold": 25,
+            "metals": 5,
+            "bonds": 30,
+            "usd": 5,
+            "krw": 5
+        },
+        "recession": {
+            "stocks": 20,
+            "gold": 30,
+            "metals": 5,
+            "bonds": 35,
+            "usd": 5,
+            "krw": 5
+        }
     },
-    "recession": {
-      "composite_min": 0
+    "backtest": {
+        "start_date": "2024-01-01",
+        "end_date": "2026-01-31",
+        "initial_capital": 10000,
+        "rebalance_frequencies": [
+            "m",
+            "q",
+            "a"
+        ],
+        "benchmark": "SPY"
+    },
+    "asset_tickers": {
+        "stocks": "SPYM",
+        "gold": "GLD",
+        "metals": "PICK",
+        "bonds": "TLT",
+        "usd": "UUP",
+        "krw": "FXY"
     }
-  },
-  "allocation": {
-    "expansion": {
-      "stocks": 70,
-      "gold": 5,
-      "metals": 10,
-      "bonds": 5,
-      "usd": 5,
-      "krw": 5
-    },
-    "overheating": {
-      "stocks": 40,
-      "gold": 15,
-      "metals": 10,
-      "bonds": 20,
-      "usd": 10,
-      "krw": 5
-    },
-    "slowdown": {
-      "stocks": 30,
-      "gold": 25,
-      "metals": 5,
-      "bonds": 30,
-      "usd": 5,
-      "krw": 5
-    },
-    "recession": {
-      "stocks": 20,
-      "gold": 30,
-      "metals": 5,
-      "bonds": 35,
-      "usd": 5,
-      "krw": 5
-    }
-  }
 }

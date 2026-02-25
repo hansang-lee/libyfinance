@@ -45,14 +45,24 @@ class MacroScorer {
      */
     static bool analyze(const std::string& apiKey, const std::string& configPath);
 
-    [[nodiscard]] static std::string regimeToString(Regime regime);
-
-   private:
     /**
-     * @brief Compute macro category scores from FRED + FNG data.
+     * @brief Compute macro category scores using latest values of each series.
      */
     static MacroScores computeScores(const std::map<std::string, std::shared_ptr<FredSeriesInfo>>& fredData,
                                      const std::shared_ptr<FearAndGreedInfo>&                      fngData);
+
+    /**
+     * @brief Compute macro category scores at a specific index in the time series.
+     *        Used for backtesting — evaluates data at data[index] vs data[index-1].
+     * @param index The time index to evaluate (must be >= 1)
+     */
+    static MacroScores computeScoresAt(const std::map<std::string, std::shared_ptr<FredSeriesInfo>>& fredData,
+                                       size_t                                                        index);
+
+    /**
+     * @brief Compute weighted composite score from category scores.
+     */
+    static double computeComposite(const MacroScores& scores, const nlohmann::json& config);
 
     /**
      * @brief Detect the current economic regime from scores.
@@ -64,9 +74,16 @@ class MacroScorer {
      */
     static Allocation getAllocation(Regime regime, const nlohmann::json& config);
 
+    [[nodiscard]] static std::string regimeToString(Regime regime);
+
+    /**
+     * @brief Clamp value to 0-100 range.
+     */
+    static double clamp(double value);
+
+   private:
     /**
      * @brief Helper: compute rate of change between last two values of a series.
-     * @return change in percentage points (e.g., 4.0 -> 4.3 = +0.3)
      */
     static double rateOfChange(const std::shared_ptr<FredSeriesInfo>& series);
 
@@ -76,7 +93,12 @@ class MacroScorer {
     static double latestValue(const std::shared_ptr<FredSeriesInfo>& series);
 
     /**
-     * @brief Clamp value to 0-100 range.
+     * @brief Helper: get value at specific index.
      */
-    static double clamp(double value);
+    static double valueAt(const std::shared_ptr<FredSeriesInfo>& series, size_t index);
+
+    /**
+     * @brief Helper: compute rate of change at specific index (value[i] - value[i-1]).
+     */
+    static double rateOfChangeAt(const std::shared_ptr<FredSeriesInfo>& series, size_t index);
 };

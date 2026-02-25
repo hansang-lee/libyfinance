@@ -28,175 +28,211 @@ double MacroScorer::latestValue(const std::shared_ptr<FredSeriesInfo>& series) {
     return series->values.back();
 }
 
+double MacroScorer::valueAt(const std::shared_ptr<FredSeriesInfo>& series, size_t index) {
+    if (!series || index >= series->values.size()) {
+        return 0.0;
+    }
+    return series->values[index];
+}
+
+double MacroScorer::rateOfChangeAt(const std::shared_ptr<FredSeriesInfo>& series, size_t index) {
+    if (!series || index == 0 || index >= series->values.size()) {
+        return 0.0;
+    }
+    return series->values[index] - series->values[index - 1];
+}
+
+/* Scoring helper: generic scoring with value/change getters */
+namespace {
+
+struct DataAccessor {
+    using GetValue  = std::function<double(const std::shared_ptr<FredSeriesInfo>&)>;
+    using GetChange = std::function<double(const std::shared_ptr<FredSeriesInfo>&)>;
+    GetValue  getValue;
+    GetChange getChange;
+};
+
+double scoreGrowth(const std::map<std::string, std::shared_ptr<FredSeriesInfo>>& data, const DataAccessor& acc) {
+    double s = 50.0;
+
+    if (data.count("UNRATE")) {
+        double roc = acc.getChange(data.at("UNRATE"));
+        double lvl = acc.getValue(data.at("UNRATE"));
+        s += (-roc) * 100.0;
+        s += (5.0 - lvl) * 5.0;
+    }
+
+    if (data.count("PAYEMS")) {
+        double roc = acc.getChange(data.at("PAYEMS"));
+        s += (roc / 200.0) * 10.0;
+    }
+
+    if (data.count("INDPRO")) {
+        double roc = acc.getChange(data.at("INDPRO"));
+        s += roc * 5.0;
+    }
+
+    return MacroScorer::clamp(s);
+}
+
+double scoreInflation(const std::map<std::string, std::shared_ptr<FredSeriesInfo>>& data, const DataAccessor& acc) {
+    double s = 50.0;
+
+    if (data.count("CPIAUCSL")) {
+        double roc    = acc.getChange(data.at("CPIAUCSL"));
+        double val    = acc.getValue(data.at("CPIAUCSL"));
+        double pctChg = (val > 0) ? (roc / val) * 100.0 * 12.0 : 0.0;
+        s += (pctChg - 2.0) * 10.0;
+    }
+
+    if (data.count("CPILFESL")) {
+        double roc    = acc.getChange(data.at("CPILFESL"));
+        double val    = acc.getValue(data.at("CPILFESL"));
+        double pctChg = (val > 0) ? (roc / val) * 100.0 * 12.0 : 0.0;
+        s += (pctChg - 2.0) * 8.0;
+    }
+
+    if (data.count("PCEPI")) {
+        double roc    = acc.getChange(data.at("PCEPI"));
+        double val    = acc.getValue(data.at("PCEPI"));
+        double pctChg = (val > 0) ? (roc / val) * 100.0 * 12.0 : 0.0;
+        s += (pctChg - 2.0) * 7.0;
+    }
+
+    return MacroScorer::clamp(s);
+}
+
+double scoreLiquidity(const std::map<std::string, std::shared_ptr<FredSeriesInfo>>& data, const DataAccessor& acc) {
+    double s = 50.0;
+
+    if (data.count("M2REAL")) {
+        double roc    = acc.getChange(data.at("M2REAL"));
+        double val    = acc.getValue(data.at("M2REAL"));
+        double pctChg = (val > 0) ? (roc / val) * 100.0 : 0.0;
+        s += pctChg * 30.0;
+    }
+
+    if (data.count("WM2NS")) {
+        double roc    = acc.getChange(data.at("WM2NS"));
+        double val    = acc.getValue(data.at("WM2NS"));
+        double pctChg = (val > 0) ? (roc / val) * 100.0 : 0.0;
+        s += pctChg * 20.0;
+    }
+
+    if (data.count("FEDFUNDS")) {
+        double rate = acc.getValue(data.at("FEDFUNDS"));
+        s += (3.0 - rate) * 5.0;
+    }
+
+    return MacroScorer::clamp(s);
+}
+
+double scoreSentiment(const std::map<std::string, std::shared_ptr<FredSeriesInfo>>& data, const DataAccessor& acc,
+                      const std::shared_ptr<FearAndGreedInfo>& fng) {
+    double s = 50.0;
+    int    n = 0;
+
+    if (fng) {
+        s = fng->score;
+        n++;
+    }
+
+    if (data.count("UMCSENT")) {
+        double val   = acc.getValue(data.at("UMCSENT"));
+        double normd = MacroScorer::clamp((val - 50.0) * (100.0 / 60.0));
+        if (n > 0) {
+            s = (s + normd) / 2.0;
+        } else {
+            s = normd;
+        }
+    }
+
+    return MacroScorer::clamp(s);
+}
+
+double scoreRisk(const std::map<std::string, std::shared_ptr<FredSeriesInfo>>& data, const DataAccessor& acc) {
+    double s = 50.0;
+
+    if (data.count("T10Y2Y")) {
+        double spread = acc.getValue(data.at("T10Y2Y"));
+        s += (-spread) * 10.0;
+    }
+
+    if (data.count("BAMLH0A0HYM2")) {
+        double spread = acc.getValue(data.at("BAMLH0A0HYM2"));
+        s += (spread - 4.0) * 8.0;
+    }
+
+    return MacroScorer::clamp(s);
+}
+
+}  // namespace
+
 MacroScores MacroScorer::computeScores(const std::map<std::string, std::shared_ptr<FredSeriesInfo>>& data,
                                        const std::shared_ptr<FearAndGreedInfo>&                      fng) {
+    DataAccessor acc;
+    acc.getValue = [](const std::shared_ptr<FredSeriesInfo>& s) {
+        return MacroScorer::latestValue(s);
+    };
+    acc.getChange = [](const std::shared_ptr<FredSeriesInfo>& s) {
+        return MacroScorer::rateOfChange(s);
+    };
+
     MacroScores scores;
-
-    /* ===== GROWTH SCORE =====
-     * UNRATE:  lower & declining = stronger economy → higher score
-     * PAYEMS:  increasing = stronger economy → higher score
-     * INDPRO:  increasing = stronger economy → higher score
-     */
-    {
-        double s = 50.0;
-
-        if (data.count("UNRATE")) {
-            double roc = rateOfChange(data.at("UNRATE"));
-            double lvl = latestValue(data.at("UNRATE"));
-            // Negative change in unemployment is good (+10 per -0.1pp)
-            s += (-roc) * 100.0;
-            // Low unemployment level is good (below 4% = bonus, above 6% = penalty)
-            s += (5.0 - lvl) * 5.0;
-        }
-
-        if (data.count("PAYEMS")) {
-            double roc = rateOfChange(data.at("PAYEMS"));
-            // Positive job growth is good (normalized, ~200k/mo is healthy)
-            s += (roc / 200.0) * 10.0;
-        }
-
-        if (data.count("INDPRO")) {
-            double roc = rateOfChange(data.at("INDPRO"));
-            // Positive industrial production growth is good
-            s += roc * 5.0;
-        }
-
-        scores.growth = clamp(s);
-    }
-
-    /* ===== INFLATION SCORE =====
-     * Higher score = higher inflation pressure
-     * CPIAUCSL/CPILFESL/PCEPI: month-over-month change
-     */
-    {
-        double s = 50.0;
-
-        if (data.count("CPIAUCSL")) {
-            double roc    = rateOfChange(data.at("CPIAUCSL"));
-            double pctChg = (roc / latestValue(data.at("CPIAUCSL"))) * 100.0 * 12.0;  // annualized
-            // 2% = neutral, above = inflationary
-            s += (pctChg - 2.0) * 10.0;
-        }
-
-        if (data.count("CPILFESL")) {
-            double roc    = rateOfChange(data.at("CPILFESL"));
-            double pctChg = (roc / latestValue(data.at("CPILFESL"))) * 100.0 * 12.0;
-            s += (pctChg - 2.0) * 8.0;
-        }
-
-        if (data.count("PCEPI")) {
-            double roc    = rateOfChange(data.at("PCEPI"));
-            double pctChg = (roc / latestValue(data.at("PCEPI"))) * 100.0 * 12.0;
-            s += (pctChg - 2.0) * 7.0;
-        }
-
-        scores.inflation = clamp(s);
-    }
-
-    /* ===== LIQUIDITY SCORE =====
-     * Higher score = more liquidity (easier monetary conditions)
-     * M2REAL: growing = more liquidity
-     * WM2NS:  growing = more liquidity
-     * FEDFUNDS: lower = more liquidity
-     */
-    {
-        double s = 50.0;
-
-        if (data.count("M2REAL")) {
-            double roc    = rateOfChange(data.at("M2REAL"));
-            double pctChg = (roc / latestValue(data.at("M2REAL"))) * 100.0;
-            s += pctChg * 30.0;
-        }
-
-        if (data.count("WM2NS")) {
-            double roc    = rateOfChange(data.at("WM2NS"));
-            double pctChg = (roc / latestValue(data.at("WM2NS"))) * 100.0;
-            s += pctChg * 20.0;
-        }
-
-        if (data.count("FEDFUNDS")) {
-            double rate = latestValue(data.at("FEDFUNDS"));
-            // Lower rates = more liquidity (0% = max, 6%+ = min)
-            s += (3.0 - rate) * 5.0;
-        }
-
-        scores.liquidity = clamp(s);
-    }
-
-    /* ===== SENTIMENT SCORE =====
-     * FNG:     0-100 directly
-     * UMCSENT: typically 50-110, normalize to 0-100
-     */
-    {
-        double s = 50.0;
-        int    n = 0;
-
-        if (fng) {
-            s = fng->score;
-            n++;
-        }
-
-        if (data.count("UMCSENT")) {
-            double val   = latestValue(data.at("UMCSENT"));
-            double normd = clamp((val - 50.0) * (100.0 / 60.0));
-            if (n > 0) {
-                s = (s + normd) / 2.0;
-            } else {
-                s = normd;
-            }
-        }
-
-        scores.sentiment = clamp(s);
-    }
-
-    /* ===== RISK SCORE =====
-     * Higher score = more risk in the environment
-     * T10Y2Y:        negative (inverted) = recession signal = high risk
-     * BAMLH0A0HYM2:  higher spread = more credit risk
-     */
-    {
-        double s = 50.0;
-
-        if (data.count("T10Y2Y")) {
-            double spread = latestValue(data.at("T10Y2Y"));
-            // Negative spread = inverted yield curve = high risk
-            // +2.0 = very safe (-20), -0.5 = dangerous (+25)
-            s += (-spread) * 10.0;
-        }
-
-        if (data.count("BAMLH0A0HYM2")) {
-            double spread = latestValue(data.at("BAMLH0A0HYM2"));
-            // Normal ~3-4%, above 5% = elevated risk
-            s += (spread - 4.0) * 8.0;
-        }
-
-        scores.risk = clamp(s);
-    }
-
+    scores.growth    = scoreGrowth(data, acc);
+    scores.inflation = scoreInflation(data, acc);
+    scores.liquidity = scoreLiquidity(data, acc);
+    scores.sentiment = scoreSentiment(data, acc, fng);
+    scores.risk      = scoreRisk(data, acc);
     return scores;
+}
+
+MacroScores MacroScorer::computeScoresAt(const std::map<std::string, std::shared_ptr<FredSeriesInfo>>& data,
+                                         size_t                                                        index) {
+    DataAccessor acc;
+    acc.getValue = [index](const std::shared_ptr<FredSeriesInfo>& s) {
+        return MacroScorer::valueAt(s, index);
+    };
+    acc.getChange = [index](const std::shared_ptr<FredSeriesInfo>& s) {
+        return MacroScorer::rateOfChangeAt(s, index);
+    };
+
+    MacroScores scores;
+    scores.growth    = scoreGrowth(data, acc);
+    scores.inflation = scoreInflation(data, acc);
+    scores.liquidity = scoreLiquidity(data, acc);
+    scores.sentiment = scoreSentiment(data, acc, nullptr);  // no FNG for historical
+    scores.risk      = scoreRisk(data, acc);
+    return scores;
+}
+
+double MacroScorer::computeComposite(const MacroScores& scores, const nlohmann::json& config) {
+    if (!config.contains("scoring_weights")) {
+        return 50.0;
+    }
+    const auto& w = config["scoring_weights"];
+    return scores.growth * w.value("growth", 0.25) + (100.0 - scores.inflation) * w.value("inflation", 0.20)
+         + scores.liquidity * w.value("liquidity", 0.20) + scores.sentiment * w.value("sentiment", 0.15)
+         + (100.0 - scores.risk) * w.value("risk", 0.20);
 }
 
 Regime MacroScorer::detectRegime(const MacroScores& scores, const nlohmann::json& config) {
     const auto& thresholds = config["regime_thresholds"];
 
-    // Overheating: decent growth but high inflation
     if (scores.growth >= thresholds["overheating"].value("composite_min", 45.0)
         && scores.inflation >= thresholds["overheating"].value("inflation_min", 65.0)) {
         return Regime::Overheating;
     }
 
-    // Expansion: high composite, moderate inflation
     if (scores.growth >= thresholds["expansion"].value("composite_min", 60.0)
         && scores.inflation < thresholds["expansion"].value("inflation_max", 65.0)) {
         return Regime::Expansion;
     }
 
-    // Recession: low growth or high risk
     if (scores.growth < thresholds["slowdown"].value("composite_min", 25.0) || scores.risk >= 70.0) {
         return Regime::Recession;
     }
 
-    // Default: Slowdown
     return Regime::Slowdown;
 }
 
@@ -265,11 +301,11 @@ bool MacroScorer::analyze(const std::string& apiKey, const std::string& configPa
     /* Fetch FRED data */
     // clang-format off
     const std::vector<std::string> seriesIds = {
-        "UNRATE", "PAYEMS", "INDPRO",                     // Growth
-        "CPIAUCSL", "CPILFESL", "PCEPI",                  // Inflation
-        "M2REAL", "WM2NS", "FEDFUNDS",                    // Liquidity
-        "UMCSENT",                                         // Sentiment
-        "T10Y2Y", "BAMLH0A0HYM2"                          // Risk
+        "UNRATE", "PAYEMS", "INDPRO",
+        "CPIAUCSL", "CPILFESL", "PCEPI",
+        "M2REAL", "WM2NS", "FEDFUNDS",
+        "UMCSENT",
+        "T10Y2Y", "BAMLH0A0HYM2"
     };
     // clang-format on
 
@@ -299,13 +335,7 @@ bool MacroScorer::analyze(const std::string& apiKey, const std::string& configPa
     auto scores = computeScores(fredData, fngData);
 
     /* Apply weights */
-    if (config.contains("scoring_weights")) {
-        const auto& w    = config["scoring_weights"];
-        scores.composite = scores.growth * w.value("growth", 0.25)
-                         + (100.0 - scores.inflation) * w.value("inflation", 0.20)
-                         + scores.liquidity * w.value("liquidity", 0.20) + scores.sentiment * w.value("sentiment", 0.15)
-                         + (100.0 - scores.risk) * w.value("risk", 0.20);
-    }
+    scores.composite = computeComposite(scores, config);
 
     /* Detect regime */
     auto regime = detectRegime(scores, config);

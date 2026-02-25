@@ -20,6 +20,7 @@ add_library(${PROJECT_NAME} SHARED
   src/yfinance.cpp
   src/backtest/backtest_engine.cpp
   src/macro/macro_scorer.cpp
+  src/macro/macro_backtester.cpp
   lib/sma_crossover/sma_crossover.cpp
   lib/rsi/rsi_strategy.cpp
 )
