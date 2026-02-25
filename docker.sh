@@ -31,6 +31,7 @@ DOCKER_ARGS=(
     "--env=NVIDIA_VISIBLE_DEVICES=all"
     "--env=NVIDIA_DRIVER_CAPABILITIES=all"
     "--env=TZ=Asia/Seoul"
+    "--env-file=${HOME}/.env"
     "--mount=source=/etc/localtime,target=/etc/localtime,type=bind,consistency=cached:ro"
     "--mount=source=/etc/timezone,target=/etc/timezone,type=bind,consistency=cached:ro"
     "--mount=source=/dev,target=/dev,type=bind,consistency=cached:ro"

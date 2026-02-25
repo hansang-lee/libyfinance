@@ -245,6 +245,84 @@ std::shared_ptr<FearAndGreedInfo> yFinance::getFearAndGreedIndex() {
     return data;
 }
 
+std::shared_ptr<FredSeriesInfo> yFinance::getFredSeries(const std::string& seriesId, const std::string& apiKey,
+                                                        const std::string& observationStart,
+                                                        const std::string& observationEnd,
+                                                        const std::string& frequency) {
+    std::string baseUrl =
+        std::string(fred_url_base_) + "?series_id=" + seriesId + "&api_key=" + apiKey + "&file_type=json";
+
+    if (!observationStart.empty()) {
+        baseUrl += "&observation_start=" + observationStart;
+    }
+    if (!observationEnd.empty()) {
+        baseUrl += "&observation_end=" + observationEnd;
+    }
+
+    std::string url = baseUrl;
+    if (!frequency.empty()) {
+        url += "&frequency=" + frequency;
+    }
+
+    auto fetched = fetch(url);
+    if (fetched.empty()) {
+        return nullptr;
+    }
+
+    const auto data = std::make_shared<FredSeriesInfo>();
+    if (!data) {
+        return nullptr;
+    }
+
+    try {
+        auto parsed = nlohmann::json::parse(fetched);
+
+        /* Retry without frequency if the series doesn't support it */
+        if (parsed.contains("error_code") && !frequency.empty()) {
+            const auto msg = parsed.value("error_message", "");
+            if (msg.find("frequency") != std::string::npos) {
+                fetched = fetch(baseUrl);
+                if (fetched.empty()) {
+                    return nullptr;
+                }
+                parsed = nlohmann::json::parse(fetched);
+            }
+        }
+
+        if (parsed.contains("error_code")) {
+            std::cerr << "FRED API error: " << parsed.value("error_message", "Unknown error") << std::endl;
+            return nullptr;
+        }
+
+        if (!parsed.contains("observations")) {
+            return nullptr;
+        }
+
+        data->seriesId = seriesId;
+
+        for (const auto& obs : parsed["observations"]) {
+            const auto dateStr  = obs.value("date", "");
+            const auto valueStr = obs.value("value", "");
+
+            /* skip missing data marked as "." */
+            if (valueStr == "." || valueStr.empty()) {
+                continue;
+            }
+
+            data->dates.push_back(dateStr);
+            data->values.push_back(std::stod(valueStr));
+        }
+    } catch (const nlohmann::json::parse_error& e) {
+        std::cerr << "JSON parse error: " << e.what() << std::endl;
+        return nullptr;
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return nullptr;
+    }
+
+    return data;
+}
+
 std::string yFinance::fetch(const std::string& url, bool is_cnn) {
     CURL*    curl = nullptr;
     CURLcode res  = CURLE_OK;

@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "fng_info.hpp"
+#include "fred_info.hpp"
 #include "stock_info.hpp"
 
 class yFinance {
@@ -46,14 +47,29 @@ class yFinance {
                                                                  const std::string& interval);
 
     /**
+     * @brief Fetch FRED economic data series (e.g., UNRATE, FEDFUNDS).
+     * @param seriesId FRED series ID (e.g., "UNRATE", "FEDFUNDS")
+     * @param apiKey FRED API key
+     * @param observationStart Optional start date (YYYY-MM-DD)
+     * @param observationEnd Optional end date (YYYY-MM-DD)
+     * @param frequency Optional frequency: "d"(daily), "w"(weekly), "m"(monthly), "q"(quarterly), "a"(annual).
+     *        If higher than the series' native frequency, FRED returns data at the native frequency.
+     * @return FredSeriesInfo containing date-value time-series
+     */
+    [[nodiscard]] static std::shared_ptr<FredSeriesInfo>
+    getFredSeries(const std::string& seriesId, const std::string& apiKey, const std::string& observationStart = "",
+                  const std::string& observationEnd = "", const std::string& frequency = "");
+
+    /**
      * @brief Fetch CNN Fear and Greed Index.
      * @return FearAndGreedInfo containing current and historical sentiment index
      */
     [[nodiscard]] static std::shared_ptr<FearAndGreedInfo> getFearAndGreedIndex();
 
    private:
-    static constexpr std::string_view url_base_     = "https://query1.finance.yahoo.com/v8/finance/chart/";
-    static constexpr std::string_view cnn_url_base_ = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata";
+    static constexpr std::string_view url_base_      = "https://query1.finance.yahoo.com/v8/finance/chart/";
+    static constexpr std::string_view cnn_url_base_  = "https://production.dataviz.cnn.io/index/fearandgreed/graphdata";
+    static constexpr std::string_view fred_url_base_ = "https://api.stlouisfed.org/fred/series/observations";
 
     [[nodiscard]] static std::string fetch(const std::string& url, bool is_cnn = false);
 
