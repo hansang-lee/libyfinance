@@ -1,0 +1,59 @@
+{
+    "scoring_weights": {
+        "growth": 0.15,
+        "inflation": 0.25,
+        "liquidity": 0.15,
+        "sentiment": 0.15,
+        "risk": 0.30
+    },
+    "regime_thresholds": {
+        "expansion": {
+            "composite_min": 65,
+            "inflation_max": 60
+        },
+        "overheating": {
+            "composite_min": 50,
+            "inflation_min": 60
+        },
+        "slowdown": {
+            "composite_min": 30
+        },
+        "recession": {
+            "composite_min": 0
+        }
+    },
+    "allocation": {
+        "expansion": {
+            "stocks": 35,
+            "gold": 15,
+            "metals": 5,
+            "bonds": 30,
+            "usd": 10,
+            "krw": 5
+        },
+        "overheating": {
+            "stocks": 20,
+            "gold": 25,
+            "metals": 5,
+            "bonds": 35,
+            "usd": 10,
+            "krw": 5
+        },
+        "slowdown": {
+            "stocks": 15,
+            "gold": 25,
+            "metals": 5,
+            "bonds": 40,
+            "usd": 10,
+            "krw": 5
+        },
+        "recession": {
+            "stocks": 10,
+            "gold": 30,
+            "metals": 5,
+            "bonds": 40,
+            "usd": 10,
+            "krw": 5
+        }
+    }
+}

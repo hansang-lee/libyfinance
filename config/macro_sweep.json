@@ -1,0 +1,87 @@
+{
+    "portfolios": [
+        {
+            "name": "SPYM+REMX",
+            "tickers": {
+                "stocks": "SPYM",
+                "gold": "GLD",
+                "metals": "REMX",
+                "bonds": "TLT",
+                "usd": "UUP",
+                "krw": "FXY"
+            }
+        },
+        {
+            "name": "RSP+PICK",
+            "tickers": {
+                "stocks": "RSP",
+                "gold": "GLD",
+                "metals": "PICK",
+                "bonds": "TLT",
+                "usd": "UUP",
+                "krw": "FXY"
+            }
+        },
+        {
+            "name": "QQQ+REMX",
+            "tickers": {
+                "stocks": "QQQ",
+                "gold": "GLD",
+                "metals": "REMX",
+                "bonds": "TLT",
+                "usd": "UUP",
+                "krw": "FXY"
+            }
+        },
+        {
+            "name": "IWM+PICK",
+            "tickers": {
+                "stocks": "IWM",
+                "gold": "GLD",
+                "metals": "PICK",
+                "bonds": "TLT",
+                "usd": "UUP",
+                "krw": "FXY"
+            }
+        }
+    ],
+    "strategies": [
+        {
+            "name": "Aggressive",
+            "config": "config/strategies/aggressive.json"
+        },
+        {
+            "name": "Balanced",
+            "config": "config/strategies/balanced.json"
+        },
+        {
+            "name": "Defensive",
+            "config": "config/strategies/defensive.json"
+        }
+    ],
+    "periods": [
+        {
+            "name": "COVID",
+            "start": "2019-01-01",
+            "end": "2021-12-31"
+        },
+        {
+            "name": "Rate Hike",
+            "start": "2022-01-01",
+            "end": "2024-06-30"
+        },
+        {
+            "name": "Full",
+            "start": "2015-01-01",
+            "end": "2025-12-31"
+        }
+    ],
+    "rebalance_frequency": "m",
+    "initial_capital": 10000,
+    "benchmark": "SPY",
+    "ranking": {
+        "cagr_weight": 0.35,
+        "sharpe_weight": 0.35,
+        "mdd_weight": 0.30
+    }
+}
