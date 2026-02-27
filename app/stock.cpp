@@ -37,11 +37,16 @@ void printHeader() {
     // clang-format on
 }
 
-int main() {
+int main(int argc, char* argv[]) {
     yFinance::init();
     Defer _cleanup([] { yFinance::close(); });
 
-    const auto data = yFinance::getStockInfo("^IXIC", "2026-01-01", "2026-02-01", "1d");
+    const auto TICKER   = ((argc > 1) ? argv[1] : "^IXIC");
+    const auto START    = ((argc > 2) ? argv[2] : "2026-01-01");
+    const auto END      = ((argc > 3) ? argv[3] : "2026-02-01");
+    const auto INTERVAL = ((argc > 4) ? argv[4] : "1d");
+
+    const auto data = yFinance::getStockInfo(TICKER, START, END, INTERVAL);
     if (!data) {
         return 1;
     }
