@@ -1,23 +1,23 @@
 {
-    "timestamp": "2026-02-27T14:00:00Z",
-    "scores": {
-        "growth": 62.3,
-        "inflation": 48.1,
-        "liquidity": 55.0,
-        "sentiment": 41.2,
-        "risk": 38.5,
-        "composite": 56.8
-    },
-    "regime": "EXPANSION",
-    "allocation": {
-        "stocks": 70,
-        "gold": 5,
-        "metals": 10,
-        "bonds": 5,
-        "cash": 10
-    },
-    "fng": {
-        "score": 45,
-        "rating": "Fear"
-    }
+  "allocation": {
+    "bonds": 20,
+    "cash": 15,
+    "gold": 15,
+    "metals": 10,
+    "stocks": 40
+  },
+  "fng": {
+    "rating": "fear",
+    "score": 44.4285714285714
+  },
+  "regime": "OVERHEATING",
+  "scores": {
+    "composite": 50.6,
+    "growth": 73.6,
+    "inflation": 78.5,
+    "liquidity": 53.5,
+    "risk": 34.6,
+    "sentiment": 27.5
+  },
+  "timestamp": "2026-02-27T04:23:41Z"
 }
