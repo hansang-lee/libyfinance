@@ -260,8 +260,7 @@ Allocation MacroScorer::getAllocation(Regime regime, const nlohmann::json& confi
         alloc.gold    = a.value("gold", 0.0);
         alloc.metals  = a.value("metals", 0.0);
         alloc.bonds   = a.value("bonds", 0.0);
-        alloc.usd     = a.value("usd", 0.0);
-        alloc.krw     = a.value("krw", 0.0);
+        alloc.cash    = a.value("cash", 0.0);
     }
 
     return alloc;
@@ -381,10 +380,8 @@ bool MacroScorer::analyze(const std::string& apiKey, const std::string& configPa
               << std::right << std::setw(9) << static_cast<int>(alloc.metals) << "%" << std::endl;
     std::clog << std::left << std::setw(20) << "Bonds (US Treasury)"
               << std::right << std::setw(9) << static_cast<int>(alloc.bonds) << "%" << std::endl;
-    std::clog << std::left << std::setw(20) << "USD"
-              << std::right << std::setw(9) << static_cast<int>(alloc.usd) << "%" << std::endl;
-    std::clog << std::left << std::setw(20) << "KRW"
-              << std::right << std::setw(9) << static_cast<int>(alloc.krw) << "%" << std::endl;
+    std::clog << std::left << std::setw(20) << "Cash"
+              << std::right << std::setw(9) << static_cast<int>(alloc.cash) << "%" << std::endl;
     // clang-format on
 
     return true;

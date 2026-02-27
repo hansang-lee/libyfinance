@@ -102,8 +102,7 @@ MacroBacktestResult MacroBacktester::run(const nlohmann::json&                  
         applyAsset("gold", currentAlloc.gold);
         applyAsset("metals", currentAlloc.metals);
         applyAsset("bonds", currentAlloc.bonds);
-        applyAsset("usd", currentAlloc.usd);
-        applyAsset("krw", currentAlloc.krw);
+        applyAsset("cash", currentAlloc.cash);
 
         equity *= (1.0 + portfolioReturn);
         equityCurve.push_back(equity);
@@ -296,8 +295,7 @@ void MacroBacktester::printResults(const std::vector<MacroBacktestResult>& resul
                           << "  Gold=" << static_cast<int>(p.alloc.gold) << "%"
                           << "  Metals=" << static_cast<int>(p.alloc.metals) << "%"
                           << "  Bonds=" << static_cast<int>(p.alloc.bonds) << "%"
-                          << "  USD=" << static_cast<int>(p.alloc.usd) << "%"
-                          << "  KRW=" << static_cast<int>(p.alloc.krw) << "%" << std::endl;
+                          << "  Cash=" << static_cast<int>(p.alloc.cash) << "%" << std::endl;
 
                 // Equity
                 std::clog << "  Equity:      $" << std::setprecision(0) << p.equity << "  (month: " << std::showpos

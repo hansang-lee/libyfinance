@@ -28,32 +28,28 @@
             "gold": 15,
             "metals": 5,
             "bonds": 30,
-            "usd": 10,
-            "krw": 5
+            "cash": 15
         },
         "overheating": {
             "stocks": 20,
             "gold": 25,
             "metals": 5,
             "bonds": 35,
-            "usd": 10,
-            "krw": 5
+            "cash": 15
         },
         "slowdown": {
             "stocks": 15,
             "gold": 25,
             "metals": 5,
             "bonds": 40,
-            "usd": 10,
-            "krw": 5
+            "cash": 15
         },
         "recession": {
             "stocks": 10,
             "gold": 30,
             "metals": 5,
             "bonds": 40,
-            "usd": 10,
-            "krw": 5
+            "cash": 15
         }
     }
 }

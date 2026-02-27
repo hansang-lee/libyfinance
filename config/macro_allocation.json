@@ -28,32 +28,28 @@
             "gold": 5,
             "metals": 10,
             "bonds": 5,
-            "usd": 5,
-            "krw": 5
+            "cash": 10
         },
         "overheating": {
             "stocks": 40,
             "gold": 15,
             "metals": 10,
             "bonds": 20,
-            "usd": 10,
-            "krw": 5
+            "cash": 15
         },
         "slowdown": {
             "stocks": 30,
             "gold": 25,
             "metals": 5,
             "bonds": 30,
-            "usd": 5,
-            "krw": 5
+            "cash": 10
         },
         "recession": {
             "stocks": 20,
             "gold": 30,
             "metals": 5,
             "bonds": 35,
-            "usd": 5,
-            "krw": 5
+            "cash": 10
         }
     },
     "backtest": {
@@ -71,8 +67,6 @@
         "stocks": "SPYM",
         "gold": "GLD",
         "metals": "PICK",
-        "bonds": "TLT",
-        "usd": "UUP",
-        "krw": "FXY"
+        "bonds": "TLT"
     }
 }

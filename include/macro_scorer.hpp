@@ -32,8 +32,7 @@ struct Allocation {
     double gold   = 0.0;
     double metals = 0.0;
     double bonds  = 0.0;
-    double usd    = 0.0;
-    double krw    = 0.0;
+    double cash   = 0.0;
 };
 
 class MacroScorer {

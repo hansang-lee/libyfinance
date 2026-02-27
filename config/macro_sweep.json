@@ -6,9 +6,7 @@
                 "stocks": "SPYM",
                 "gold": "GLD",
                 "metals": "REMX",
-                "bonds": "TLT",
-                "usd": "UUP",
-                "krw": "FXY"
+                "bonds": "TLT"
             }
         },
         {
@@ -17,9 +15,7 @@
                 "stocks": "RSP",
                 "gold": "GLD",
                 "metals": "PICK",
-                "bonds": "TLT",
-                "usd": "UUP",
-                "krw": "FXY"
+                "bonds": "TLT"
             }
         },
         {
@@ -28,9 +24,7 @@
                 "stocks": "QQQ",
                 "gold": "GLD",
                 "metals": "REMX",
-                "bonds": "TLT",
-                "usd": "UUP",
-                "krw": "FXY"
+                "bonds": "TLT"
             }
         },
         {
@@ -39,9 +33,7 @@
                 "stocks": "IWM",
                 "gold": "GLD",
                 "metals": "PICK",
-                "bonds": "TLT",
-                "usd": "UUP",
-                "krw": "FXY"
+                "bonds": "TLT"
             }
         }
     ],
