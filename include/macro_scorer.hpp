@@ -45,6 +45,14 @@ class MacroScorer {
     static bool analyze(const std::string& apiKey, const std::string& configPath);
 
     /**
+     * @brief Run full macro analysis and return results as JSON.
+     * @param apiKey FRED API key
+     * @param configPath Path to macro_allocation.json
+     * @return JSON object with scores, regime, allocation, fng; empty object on failure.
+     */
+    static nlohmann::json analyzeJson(const std::string& apiKey, const std::string& configPath);
+
+    /**
      * @brief Compute macro category scores using latest values of each series.
      */
     static MacroScores computeScores(const std::map<std::string, std::shared_ptr<FredSeriesInfo>>& fredData,

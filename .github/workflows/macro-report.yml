@@ -1,0 +1,39 @@
+name: Daily Macro Report
+
+on:
+  schedule:
+    - cron: '0 14 * * 1-5'  # Weekdays UTC 14:00 (KST 23:00)
+  workflow_dispatch:         # Manual trigger
+
+permissions:
+  contents: write
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq cmake ninja-build libcurl4-openssl-dev nlohmann-json3-dev
+
+      - name: Build macro app
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -G Ninja
+          cmake --build build --target macro
+
+      - name: Run macro analysis
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: ./build/app/macro --json > docs/data.json
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/data.json
+          git diff --cached --quiet || git commit -m "chore: update daily macro report"
+          git push

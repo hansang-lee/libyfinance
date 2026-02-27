@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Daily Macro Regime Analysis Dashboard — Scores, Regime Detection, and Asset Allocation">
+    <title>Macro Regime Report</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg: #0a0e1a;
+            --surface: rgba(255,255,255,0.04);
+            --surface-hover: rgba(255,255,255,0.07);
+            --border: rgba(255,255,255,0.08);
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #818cf8;
+            --accent-glow: rgba(129,140,248,0.15);
+
+            --expansion: #34d399;
+            --overheating: #f97316;
+            --slowdown: #fbbf24;
+            --recession: #f87171;
+
+            --stocks: #818cf8;
+            --gold: #fbbf24;
+            --metals: #a78bfa;
+            --bonds: #38bdf8;
+            --cash: #6ee7b7;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem 4rem;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            background: linear-gradient(135deg, var(--accent), #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .updated-at {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.4rem;
+        }
+
+        /* Card */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            backdrop-filter: blur(12px);
+            transition: background 0.2s;
+        }
+        .card:hover { background: var(--surface-hover); }
+
+        .card-title {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+        }
+
+        /* Regime Badge */
+        .regime-section { text-align: center; }
+
+        .regime-badge {
+            display: inline-block;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            padding: 0.6rem 2rem;
+            border-radius: 12px;
+            border: 2px solid;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 0 20px currentColor;
+        }
+        .regime-badge.expansion  { color: var(--expansion);  border-color: var(--expansion);  background: rgba(52,211,153,0.08); }
+        .regime-badge.overheating { color: var(--overheating); border-color: var(--overheating); background: rgba(249,115,22,0.08); }
+        .regime-badge.slowdown   { color: var(--slowdown);   border-color: var(--slowdown);   background: rgba(251,191,36,0.08); }
+        .regime-badge.recession  { color: var(--recession);  border-color: var(--recession);  background: rgba(248,113,113,0.08); }
+
+        .composite-score {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+        .composite-score span {
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* Score Bars */
+        .score-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        .score-row:last-child { margin-bottom: 0; }
+
+        .score-label {
+            width: 90px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .score-track {
+            flex: 1;
+            height: 8px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .score-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+        .score-fill::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 20px;
+            height: 100%;
+            background: inherit;
+            filter: blur(6px);
+            opacity: 0.6;
+        }
+
+        .score-value {
+            width: 45px;
+            text-align: right;
+            font-size: 0.82rem;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            flex-shrink: 0;
+            margin-left: 0.5rem;
+        }
+
+        /* Score color coding */
+        .score-fill.growth    { background: linear-gradient(90deg, #34d399, #6ee7b7); }
+        .score-fill.inflation { background: linear-gradient(90deg, #f97316, #fb923c); }
+        .score-fill.liquidity { background: linear-gradient(90deg, #38bdf8, #7dd3fc); }
+        .score-fill.sentiment { background: linear-gradient(90deg, #a78bfa, #c4b5fd); }
+        .score-fill.risk      { background: linear-gradient(90deg, #f87171, #fca5a5); }
+
+        /* Allocation Ring */
+        .alloc-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2.5rem;
+            flex-wrap: wrap;
+        }
+
+        .donut-wrapper {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            flex-shrink: 0;
+        }
+
+        .donut-svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .donut-svg circle {
+            fill: transparent;
+            stroke-width: 28;
+            transition: stroke-dasharray 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                        stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .alloc-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.85rem;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+
+        .legend-name {
+            color: var(--text-muted);
+            width: 60px;
+        }
+
+        .legend-pct {
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* FNG */
+        .fng-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+        }
+
+        .fng-score {
+            font-size: 2.5rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .fng-meta {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .fng-rating {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .fng-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .fng-bar {
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg,
+                #f87171 0%, #fbbf24 25%, #a3e635 50%, #34d399 75%, #22d3ee 100%);
+            border-radius: 3px;
+            margin-top: 1rem;
+            position: relative;
+        }
+
+        .fng-indicator {
+            position: absolute;
+            top: -4px;
+            width: 14px;
+            height: 14px;
+            background: white;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 8px rgba(255,255,255,0.5);
+            transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 4rem 0;
+            color: var(--text-muted);
+        }
+
+        .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .error-msg {
+            text-align: center;
+            padding: 2rem;
+            color: var(--recession);
+            font-size: 0.9rem;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            opacity: 0.6;
+        }
+
+        footer a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .alloc-container { flex-direction: column; gap: 1.5rem; }
+            header h1 { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Macro Regime Report</h1>
+            <div class="updated-at" id="updatedAt">Loading...</div>
+        </header>
+
+        <div id="content">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading report data...</p>
+            </div>
+        </div>
+
+        <footer>
+            Powered by <a href="https://fred.stlouisfed.org/" target="_blank">FRED</a> &amp;
+            <a href="https://edition.cnn.com/markets/fear-and-greed" target="_blank">CNN Fear &amp; Greed</a>
+            &mdash; Auto-updated daily via GitHub Actions
+        </footer>
+    </div>
+
+    <script>
+    (async function() {
+        const $content = document.getElementById('content');
+        const $updated = document.getElementById('updatedAt');
+
+        try {
+            const resp = await fetch('data.json');
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const data = await resp.json();
+            render(data);
+        } catch (e) {
+            $content.innerHTML = `<div class="error-msg">Failed to load data: ${e.message}</div>`;
+        }
+
+        function render(d) {
+            /* Timestamp */
+            const ts = new Date(d.timestamp);
+            $updated.textContent = `Last updated: ${ts.toLocaleString('en-US', {
+                year: 'numeric', month: 'short', day: 'numeric',
+                hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
+            })}`;
+
+            /* Build HTML */
+            const regime = d.regime.toLowerCase();
+            const scores = d.scores;
+            const alloc = d.allocation;
+            const fng = d.fng;
+
+            const scoreCategories = [
+                { key: 'growth',    label: 'Growth',    cls: 'growth' },
+                { key: 'inflation', label: 'Inflation', cls: 'inflation' },
+                { key: 'liquidity', label: 'Liquidity', cls: 'liquidity' },
+                { key: 'sentiment', label: 'Sentiment', cls: 'sentiment' },
+                { key: 'risk',      label: 'Risk',      cls: 'risk' },
+            ];
+
+            const scoreBars = scoreCategories.map(s => `
+                <div class="score-row">
+                    <div class="score-label">${s.label}</div>
+                    <div class="score-track">
+                        <div class="score-fill ${s.cls}" style="width: ${scores[s.key]}%"></div>
+                    </div>
+                    <div class="score-value">${scores[s.key].toFixed(1)}</div>
+                </div>
+            `).join('');
+
+            /* Donut chart */
+            const allocEntries = [
+                { key: 'stocks', label: 'Stocks', color: 'var(--stocks)' },
+                { key: 'gold',   label: 'Gold',   color: 'var(--gold)' },
+                { key: 'metals', label: 'Metals', color: 'var(--metals)' },
+                { key: 'bonds',  label: 'Bonds',  color: 'var(--bonds)' },
+                { key: 'cash',   label: 'Cash',   color: 'var(--cash)' },
+            ].filter(a => alloc[a.key] > 0);
+
+            const radius = 76;
+            const circumference = 2 * Math.PI * radius;
+            let cumulativeOffset = 0;
+
+            const circles = allocEntries.map(a => {
+                const pct = alloc[a.key] / 100;
+                const dashLen = pct * circumference;
+                const gap = circumference - dashLen;
+                const offset = -cumulativeOffset;
+                cumulativeOffset += dashLen;
+                return `<circle cx="90" cy="90" r="${radius}"
+                    stroke="${a.color}" stroke-dasharray="${dashLen} ${gap}"
+                    stroke-dashoffset="${offset}" />`;
+            }).join('');
+
+            const legendItems = allocEntries.map(a => `
+                <div class="legend-item">
+                    <div class="legend-dot" style="background:${a.color}"></div>
+                    <div class="legend-name">${a.label}</div>
+                    <div class="legend-pct">${alloc[a.key]}%</div>
+                </div>
+            `).join('');
+
+            /* FNG */
+            let fngHTML = '';
+            if (fng) {
+                const fngColor = fngScoreColor(fng.score);
+                fngHTML = `
+                <div class="card">
+                    <div class="card-title">Fear &amp; Greed Index</div>
+                    <div class="fng-section">
+                        <div class="fng-score" style="color:${fngColor}">${fng.score}</div>
+                        <div class="fng-meta">
+                            <div class="fng-rating" style="color:${fngColor}">${fng.rating}</div>
+                            <div class="fng-label">CNN Fear &amp; Greed</div>
+                        </div>
+                    </div>
+                    <div class="fng-bar">
+                        <div class="fng-indicator" style="left:${fng.score}%"></div>
+                    </div>
+                </div>`;
+            }
+
+            $content.innerHTML = `
+                <div class="card regime-section">
+                    <div class="card-title">Current Regime</div>
+                    <div class="regime-badge ${regime}">${d.regime}</div>
+                    <div class="composite-score">Composite Score: <span>${scores.composite.toFixed(1)}</span> / 100</div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="card-title">Macro Scores</div>
+                        ${scoreBars}
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Recommended Allocation</div>
+                        <div class="alloc-container">
+                            <div class="donut-wrapper">
+                                <svg class="donut-svg" viewBox="0 0 180 180">
+                                    ${circles}
+                                </svg>
+                            </div>
+                            <div class="alloc-legend">
+                                ${legendItems}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                ${fngHTML}
+            `;
+        }
+
+        function fngScoreColor(score) {
+            if (score <= 25) return 'var(--recession)';
+            if (score <= 45) return 'var(--slowdown)';
+            if (score <= 55) return 'var(--text-muted)';
+            if (score <= 75) return 'var(--expansion)';
+            return 'var(--overheating)';
+        }
+    })();
+    </script>
+</body>
+</html>

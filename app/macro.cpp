@@ -5,6 +5,8 @@
 
 #include <unistd.h>
 
+#include <nlohmann/json.hpp>
+
 #include "macro_scorer.hpp"
 #include "yfinance.hpp"
 
@@ -49,17 +51,38 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    std::string configPath = resolveFromExe("config/macro_allocation.json");
-    if (argc > 1) {
-        configPath = argv[1];
+    // Parse arguments
+    bool        jsonMode = false;
+    std::string configPath;
+
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+        if (arg == "--json") {
+            jsonMode = true;
+        } else {
+            configPath = arg;
+        }
+    }
+
+    if (configPath.empty()) {
+        configPath = resolveFromExe("config/macro_allocation.json");
     }
 
     yFinance::init();
     Defer _cleanup([] { yFinance::close(); });
 
-    if (!MacroScorer::analyze(apiKey, configPath)) {
-        std::cerr << "Analysis failed." << std::endl;
-        return 1;
+    if (jsonMode) {
+        auto result = MacroScorer::analyzeJson(apiKey, configPath);
+        if (result.empty()) {
+            std::cerr << "Analysis failed." << std::endl;
+            return 1;
+        }
+        std::cout << result.dump(2) << std::endl;
+    } else {
+        if (!MacroScorer::analyze(apiKey, configPath)) {
+            std::cerr << "Analysis failed." << std::endl;
+            return 1;
+        }
     }
 
     return 0;

@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cmath>
+#include <ctime>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -385,4 +386,98 @@ bool MacroScorer::analyze(const std::string& apiKey, const std::string& configPa
     // clang-format on
 
     return true;
+}
+
+nlohmann::json MacroScorer::analyzeJson(const std::string& apiKey, const std::string& configPath) {
+    /* Load config */
+    nlohmann::json config;
+    {
+        std::ifstream f(configPath);
+        if (!f.is_open()) {
+            std::cerr << "Error: Cannot open config file: " << configPath << std::endl;
+            return {};
+        }
+        try {
+            f >> config;
+        } catch (const nlohmann::json::parse_error& e) {
+            std::cerr << "Config parse error: " << e.what() << std::endl;
+            return {};
+        }
+    }
+
+    /* Fetch FRED data */
+    // clang-format off
+    const std::vector<std::string> seriesIds = {
+        "UNRATE", "PAYEMS", "INDPRO",
+        "CPIAUCSL", "CPILFESL", "PCEPI",
+        "M2REAL", "WM2NS", "FEDFUNDS",
+        "UMCSENT",
+        "T10Y2Y", "BAMLH0A0HYM2"
+    };
+    // clang-format on
+
+    std::cerr << "Fetching FRED data..." << std::endl;
+
+    std::map<std::string, std::shared_ptr<FredSeriesInfo>> fredData;
+    for (const auto& id : seriesIds) {
+        auto result = yFinance::getFredSeries(id, apiKey, "", "", "m");
+        if (result && !result->values.empty()) {
+            fredData[id] = result;
+            std::cerr << "  [OK] " << id << " (" << result->values.size() << " observations)" << std::endl;
+        } else {
+            std::cerr << "  [WARN] " << id << " - no data" << std::endl;
+        }
+    }
+
+    /* Fetch FNG data */
+    std::cerr << "Fetching Fear & Greed Index..." << std::endl;
+    auto fngData = yFinance::getFearAndGreedIndex();
+    if (fngData) {
+        std::cerr << "  [OK] FNG score: " << fngData->score << " (" << fngData->rating << ")" << std::endl;
+    } else {
+        std::cerr << "  [WARN] FNG - no data" << std::endl;
+    }
+
+    /* Compute scores */
+    auto scores      = computeScores(fredData, fngData);
+    scores.composite = computeComposite(scores, config);
+
+    /* Detect regime */
+    auto regime = detectRegime(scores, config);
+
+    /* Get allocation */
+    auto alloc = getAllocation(regime, config);
+
+    /* Build JSON */
+    // Timestamp
+    auto       now = std::time(nullptr);
+    struct tm* utc = gmtime(&now);
+    char       timeBuf[32];
+    std::strftime(timeBuf, sizeof(timeBuf), "%Y-%m-%dT%H:%M:%SZ", utc);
+
+    nlohmann::json result;
+    result["timestamp"] = std::string(timeBuf);
+
+    result["scores"] = {{"growth", std::round(scores.growth * 10.0) / 10.0},
+                        {"inflation", std::round(scores.inflation * 10.0) / 10.0},
+                        {"liquidity", std::round(scores.liquidity * 10.0) / 10.0},
+                        {"sentiment", std::round(scores.sentiment * 10.0) / 10.0},
+                        {"risk", std::round(scores.risk * 10.0) / 10.0},
+                        {"composite", std::round(scores.composite * 10.0) / 10.0}};
+
+    result["regime"] = regimeToString(regime);
+
+    result["allocation"] = {{"stocks", static_cast<int>(alloc.stocks)},
+                            {"gold", static_cast<int>(alloc.gold)},
+                            {"metals", static_cast<int>(alloc.metals)},
+                            {"bonds", static_cast<int>(alloc.bonds)},
+                            {"cash", static_cast<int>(alloc.cash)}};
+
+    if (fngData) {
+        result["fng"] = {{"score", fngData->score}, {"rating", fngData->rating}};
+    } else {
+        result["fng"] = nullptr;
+    }
+
+    return result;
 }
