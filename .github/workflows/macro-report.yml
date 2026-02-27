@@ -28,7 +28,7 @@ jobs:
       - name: Run macro analysis
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
-        run: ./build/app/macro --json > docs/data.json
+        run: ./build/app/macro --json config/macro_allocation.json > docs/data.json
 
       - name: Commit and push
         run: |
