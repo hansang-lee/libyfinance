@@ -12,7 +12,7 @@ else
     BASE_DIR="$(dirname "$(realpath "$0")")"
 fi
 
-BUILD_TYPE="${1:-Debug}"
+BUILD_TYPE="${1:-Release}"
 BUILD_DIR="${BASE_DIR}/build/${BUILD_TYPE}"
 
 /usr/bin/cmake \

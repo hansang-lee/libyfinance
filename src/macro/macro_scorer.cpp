@@ -221,14 +221,14 @@ Regime MacroScorer::detectRegime(const MacroScores& scores, const nlohmann::json
     const auto& thresholds = config["regime_thresholds"];
 
     // 1. Overheating: High Composite + High Inflation
-    if (scores.composite >= thresholds["overheating"].value("composite_min", 45.0) &&
-        scores.inflation >= thresholds["overheating"].value("inflation_min", 65.0)) {
+    if (scores.composite >= thresholds["overheating"].value("composite_min", 45.0)
+        && scores.inflation >= thresholds["overheating"].value("inflation_min", 65.0)) {
         return Regime::Overheating;
     }
 
     // 2. Expansion: High Composite + Low/Moderate Inflation
-    if (scores.composite >= thresholds["expansion"].value("composite_min", 60.0) &&
-        scores.inflation < thresholds["expansion"].value("inflation_max", 65.0)) {
+    if (scores.composite >= thresholds["expansion"].value("composite_min", 60.0)
+        && scores.inflation < thresholds["expansion"].value("inflation_max", 65.0)) {
         return Regime::Expansion;
     }
 
@@ -484,7 +484,7 @@ nlohmann::json MacroScorer::analyzeJson(const std::string& apiKey, const std::st
     }
 
     /* Details and Summary */
-    nlohmann::json details = nlohmann::json::object();
+    nlohmann::json details   = nlohmann::json::object();
     auto           addDetail = [&](const std::string& key, const std::string& id) {
         if (fredData.count(id)) {
             const auto& series = fredData.at(id);
@@ -506,17 +506,21 @@ nlohmann::json MacroScorer::analyzeJson(const std::string& apiKey, const std::st
 
     std::string summary;
     if (regime == Regime::Expansion) {
-        summary = "The economy is in an expansionary phase. Growth indicators are generally robust while inflation "
-                  "remains within target bounds. This environment typically favors risk assets like stocks.";
+        summary =
+            "The economy is in an expansionary phase. Growth indicators are generally robust while inflation "
+            "remains within target bounds. This environment typically favors risk assets like stocks.";
     } else if (regime == Regime::Overheating) {
-        summary = "Signs of overheating are emerging. Strong growth is being coupled with rising inflationary pressure. "
-                  "Monetary tightening or market volatility may follow as the cycle matures.";
+        summary =
+            "Signs of overheating are emerging. Strong growth is being coupled with rising inflationary pressure. "
+            "Monetary tightening or market volatility may follow as the cycle matures.";
     } else if (regime == Regime::Slowdown) {
-        summary = "Economic momentum is decelerating. While not yet in a recession, growth indicators are weakening "
-                  "and risk factors are rising. A more cautious asset allocation is recommended.";
+        summary =
+            "Economic momentum is decelerating. While not yet in a recession, growth indicators are weakening "
+            "and risk factors are rising. A more cautious asset allocation is recommended.";
     } else if (regime == Regime::Recession) {
-        summary = "The analysis suggests recessionary conditions. Growth is contracting, and financial stress "
-                  "indicators are likely high. Capital preservation and defensive positioning are paramount.";
+        summary =
+            "The analysis suggests recessionary conditions. Growth is contracting, and financial stress "
+            "indicators are likely high. Capital preservation and defensive positioning are paramount.";
     }
     result["summary"] = summary;
 

@@ -1,58 +1,54 @@
 {
-    "timestamp": "2026-02-28T14:50:00Z",
-    "scores": {
-        "growth": 65.2,
-        "inflation": 42.1,
-        "liquidity": 58.5,
-        "sentiment": 62.0,
-        "risk": 32.4,
-        "composite": 63.8
+  "allocation": {
+    "bonds": 20,
+    "cash": 15,
+    "gold": 15,
+    "metals": 10,
+    "stocks": 40
+  },
+  "details": {
+    "cpi": {
+      "change": 0.5570000000000164,
+      "value": 326.588
     },
-    "regime": "EXPANSION",
-    "allocation": {
-        "stocks": 70,
-        "gold": 5,
-        "metals": 10,
-        "bonds": 5,
-        "cash": 10
+    "fedfunds": {
+      "change": -0.08000000000000007,
+      "value": 3.64
     },
-    "fng": {
-        "score": 62,
-        "rating": "Greed"
+    "hy_spread": {
+      "change": 0.1599999999999997,
+      "value": 2.9
     },
-    "details": {
-        "unrate": {
-            "value": 3.7,
-            "change": -0.1
-        },
-        "payems": {
-            "value": 158200.0,
-            "change": 225.0
-        },
-        "indpro": {
-            "value": 103.2,
-            "change": 0.4
-        },
-        "cpi": {
-            "value": 310.2,
-            "change": 0.2
-        },
-        "cpi_annual": {
-            "value": 2.8,
-            "change": -0.1
-        },
-        "fedfunds": {
-            "value": 5.33,
-            "change": 0.0
-        },
-        "yield_curve": {
-            "value": -0.35,
-            "change": 0.07
-        },
-        "hy_spread": {
-            "value": 3.32,
-            "change": -0.13
-        }
+    "indpro": {
+      "change": 0.7116000000000042,
+      "value": 102.3412
     },
-    "summary": "The economy remains in a solid expansionary phase. The Composite Score of 63.8 is well above the 60.0 threshold, supported by strong job growth (+225k) and moderating inflation (2.8%). Risk appetite is improving as shown by the Greed rating in the Fear & Greed index."
+    "payems": {
+      "change": 130.0,
+      "value": 158627.0
+    },
+    "unrate": {
+      "change": -0.10000000000000053,
+      "value": 4.3
+    },
+    "yield_curve": {
+      "change": -0.030000000000000027,
+      "value": 0.65
+    }
+  },
+  "fng": {
+    "rating": "fear",
+    "score": 42.8857142857143
+  },
+  "regime": "OVERHEATING",
+  "scores": {
+    "composite": 50.5,
+    "growth": 73.6,
+    "inflation": 78.5,
+    "liquidity": 53.5,
+    "risk": 34.7,
+    "sentiment": 26.8
+  },
+  "summary": "Signs of overheating are emerging. Strong growth is being coupled with rising inflationary pressure. Monetary tightening or market volatility may follow as the cycle matures.",
+  "timestamp": "2026-02-28T06:16:23Z"
 }
