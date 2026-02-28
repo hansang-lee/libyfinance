@@ -368,28 +368,61 @@
 
         .fng-bar {
             width: 100%;
-            height: 10px;
+            height: 12px;
             background: linear-gradient(90deg,
                     #f87171 0%, #f87171 25%,
                     #fbbf24 25%, #fbbf24 45%,
                     #94a3b8 45%, #94a3b8 55%,
                     #34d399 55%, #34d399 75%,
                     #38bdf8 75%, #38bdf8 100%);
-            border-radius: 5px;
-            margin-top: 1.25rem;
+            border-radius: 4px;
+            margin-top: 2.5rem;
+            /* Space for arrow/label above */
             position: relative;
+            /* Ruler Ticks */
+            background-image:
+                repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.4) 0, rgba(255, 255, 255, 0.4) 1px, transparent 1px, transparent 10%),
+                repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.15) 0, rgba(255, 255, 255, 0.15) 1px, transparent 1px, transparent 2%),
+                linear-gradient(90deg,
+                    #f87171 0%, #f87171 25%,
+                    #fbbf24 25%, #fbbf24 45%,
+                    #94a3b8 45%, #94a3b8 55%,
+                    #34d399 55%, #34d399 75%,
+                    #38bdf8 75%, #38bdf8 100%);
+            background-size: 100% 100%, 100% 60%, 100% 100%;
+            background-position: center;
+            background-repeat: repeat-x;
         }
 
         .fng-indicator {
             position: absolute;
-            top: -4px;
-            width: 14px;
-            height: 14px;
-            background: white;
-            border-radius: 50%;
+            top: -28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             transform: translateX(-50%);
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
             transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+
+        .fng-arrow {
+            width: 0;
+            height: 0;
+            border-left: 7px solid transparent;
+            border-right: 7px solid transparent;
+            border-top: 9px solid #fff;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+        }
+
+        .fng-val-box {
+            background: #fff;
+            color: #000;
+            font-size: 0.75rem;
+            font-weight: 800;
+            padding: 1px 5px;
+            border-radius: 4px;
+            margin-bottom: 2px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
         }
 
         /* Grid */
@@ -607,7 +640,10 @@
                         </div>
                     </div>
                     <div class="fng-bar">
-                        <div class="fng-indicator" style="left:${fng.score}%"></div>
+                        <div class="fng-indicator" style="left:${fng.score}%">
+                            <div class="fng-val-box">${fng.score}</div>
+                            <div class="fng-arrow"></div>
+                        </div>
                     </div>
                 </div>`;
                 }
