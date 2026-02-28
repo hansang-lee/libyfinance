@@ -598,7 +598,9 @@
                 /* Indicators */
                 const indicators = [
                     { label: 'Unemployment', key: 'unrate', unit: '%', higherIsBetter: false },
-                    { label: 'Fed Funds Rate', key: 'fedfunds', unit: '%', higherIsBetter: null },
+                    { label: 'Payroll (Job)', key: 'payems', unit: 'k', higherIsBetter: true },
+                    { label: 'CPI (Inf.)', key: 'cpi_annual', unit: '%', higherIsBetter: false },
+                    { label: 'Fed Funds', key: 'fedfunds', unit: '%', higherIsBetter: null },
                     { label: 'Yield Curve', key: 'yield_curve', unit: '', higherIsBetter: true },
                     { label: 'HY Spread', key: 'hy_spread', unit: '', higherIsBetter: false },
                     { label: 'Ind. Production', key: 'indpro', unit: '', higherIsBetter: true },
@@ -635,7 +637,7 @@
                     <div class="fng-section">
                         <div class="fng-score" style="color:${fngColor}">${fng.score}</div>
                         <div class="fng-meta">
-                            <div class="fng-rating" style="color:${fngColor}">${fng.rating}</div>
+                            <div class="fng-rating" style="color:${fngColor}">${fng.rating || ''}</div>
                             <div class="fng-label">CNN Fear &amp; Greed</div>
                         </div>
                     </div>
@@ -693,8 +695,8 @@
             }
 
             function fngScoreColor(score) {
-                if (score <= 25) return '#f87171'; // Extreme Fear
-                if (score <= 45) return '#fbbf24'; // Fear
+                if (score < 25) return '#f87171'; // Extreme Fear
+                if (score < 45) return '#fbbf24'; // Fear
                 if (score <= 55) return '#94a3b8'; // Neutral
                 if (score <= 75) return '#34d399'; // Greed
                 return '#38bdf8'; // Extreme Greed

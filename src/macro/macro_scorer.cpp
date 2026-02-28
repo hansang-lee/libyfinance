@@ -220,20 +220,24 @@ double MacroScorer::computeComposite(const MacroScores& scores, const nlohmann::
 Regime MacroScorer::detectRegime(const MacroScores& scores, const nlohmann::json& config) {
     const auto& thresholds = config["regime_thresholds"];
 
-    if (scores.growth >= thresholds["overheating"].value("composite_min", 45.0)
-        && scores.inflation >= thresholds["overheating"].value("inflation_min", 65.0)) {
+    // 1. Overheating: High Composite + High Inflation
+    if (scores.composite >= thresholds["overheating"].value("composite_min", 45.0) &&
+        scores.inflation >= thresholds["overheating"].value("inflation_min", 65.0)) {
         return Regime::Overheating;
     }
 
-    if (scores.growth >= thresholds["expansion"].value("composite_min", 60.0)
-        && scores.inflation < thresholds["expansion"].value("inflation_max", 65.0)) {
+    // 2. Expansion: High Composite + Low/Moderate Inflation
+    if (scores.composite >= thresholds["expansion"].value("composite_min", 60.0) &&
+        scores.inflation < thresholds["expansion"].value("inflation_max", 65.0)) {
         return Regime::Expansion;
     }
 
-    if (scores.growth < thresholds["slowdown"].value("composite_min", 25.0) || scores.risk >= 70.0) {
+    // 3. Recession: Very Low Composite or Extreme Risk
+    if (scores.composite < thresholds["slowdown"].value("composite_min", 25.0) || scores.risk >= 70.0) {
         return Regime::Recession;
     }
 
+    // 4. Slowdown: Moderate Composite without high risk/inflation
     return Regime::Slowdown;
 }
 
