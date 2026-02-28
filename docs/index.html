@@ -396,7 +396,7 @@
 
         .fng-indicator {
             position: absolute;
-            top: -28px;
+            top: -12px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -412,17 +412,6 @@
             border-right: 7px solid transparent;
             border-top: 9px solid #fff;
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
-        }
-
-        .fng-val-box {
-            background: #fff;
-            color: #000;
-            font-size: 0.75rem;
-            font-weight: 800;
-            padding: 1px 5px;
-            border-radius: 4px;
-            margin-bottom: 2px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
         }
 
         /* Grid */
@@ -635,7 +624,7 @@
                 <div class="card">
                     <div class="card-title">Fear &amp; Greed Index</div>
                     <div class="fng-section">
-                        <div class="fng-score" style="color:${fngColor}">${fng.score}</div>
+                        <div class="fng-score" style="color:${fngColor}">${Math.round(fng.score)}</div>
                         <div class="fng-meta">
                             <div class="fng-rating" style="color:${fngColor}">${fng.rating || ''}</div>
                             <div class="fng-label">CNN Fear &amp; Greed</div>
@@ -643,7 +632,6 @@
                     </div>
                     <div class="fng-bar">
                         <div class="fng-indicator" style="left:${fng.score}%">
-                            <div class="fng-val-box">${fng.score}</div>
                             <div class="fng-arrow"></div>
                         </div>
                     </div>
