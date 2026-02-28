@@ -1,5 +1,5 @@
 {
-    "timestamp": "2026-02-27T14:00:00Z",
+    "timestamp": "2026-02-28T14:30:00Z",
     "scores": {
         "growth": 62.3,
         "inflation": 48.1,
@@ -19,5 +19,36 @@
     "fng": {
         "score": 45,
         "rating": "Fear"
-    }
+    },
+    "details": {
+        "unrate": {
+            "value": 3.7,
+            "change": 0.1
+        },
+        "payems": {
+            "value": 157000.0,
+            "change": 216.0
+        },
+        "indpro": {
+            "value": 102.5,
+            "change": 0.3
+        },
+        "cpi": {
+            "value": 308.5,
+            "change": 0.4
+        },
+        "fedfunds": {
+            "value": 5.33,
+            "change": 0.0
+        },
+        "yield_curve": {
+            "value": -0.42,
+            "change": 0.05
+        },
+        "hy_spread": {
+            "value": 3.45,
+            "change": -0.1
+        }
+    },
+    "summary": "The economy is in an expansionary phase. Growth indicators are generally robust while inflation remains within target bounds. This environment typically favors risk assets like stocks."
 }

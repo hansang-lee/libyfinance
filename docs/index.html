@@ -1,25 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Daily Macro Regime Analysis Dashboard — Scores, Regime Detection, and Asset Allocation">
+    <meta name="description"
+        content="Daily Macro Regime Analysis Dashboard — Detailed Indicator Breakdown and Market Commentary">
     <title>Macro Regime Report</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         :root {
             --bg: #0a0e1a;
-            --surface: rgba(255,255,255,0.04);
-            --surface-hover: rgba(255,255,255,0.07);
-            --border: rgba(255,255,255,0.08);
+            --surface: rgba(255, 255, 255, 0.04);
+            --surface-hover: rgba(255, 255, 255, 0.07);
+            --border: rgba(255, 255, 255, 0.08);
             --text: #e2e8f0;
             --text-muted: #94a3b8;
             --accent: #818cf8;
-            --accent-glow: rgba(129,140,248,0.15);
+            --accent-glow: rgba(129, 140, 248, 0.15);
 
             --expansion: #34d399;
             --overheating: #f97316;
@@ -79,7 +87,10 @@
             backdrop-filter: blur(12px);
             transition: background 0.2s;
         }
-        .card:hover { background: var(--surface-hover); }
+
+        .card:hover {
+            background: var(--surface-hover);
+        }
 
         .card-title {
             font-size: 0.7rem;
@@ -90,8 +101,20 @@
             margin-bottom: 1rem;
         }
 
+        /* Commentary */
+        .commentary {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text);
+            border-left: 3px solid var(--accent);
+            padding-left: 1rem;
+            margin-top: 0.5rem;
+        }
+
         /* Regime Badge */
-        .regime-section { text-align: center; }
+        .regime-section {
+            text-align: center;
+        }
 
         .regime-badge {
             display: inline-block;
@@ -104,15 +127,36 @@
             margin-bottom: 0.5rem;
             text-shadow: 0 0 20px currentColor;
         }
-        .regime-badge.expansion  { color: var(--expansion);  border-color: var(--expansion);  background: rgba(52,211,153,0.08); }
-        .regime-badge.overheating { color: var(--overheating); border-color: var(--overheating); background: rgba(249,115,22,0.08); }
-        .regime-badge.slowdown   { color: var(--slowdown);   border-color: var(--slowdown);   background: rgba(251,191,36,0.08); }
-        .regime-badge.recession  { color: var(--recession);  border-color: var(--recession);  background: rgba(248,113,113,0.08); }
+
+        .regime-badge.expansion {
+            color: var(--expansion);
+            border-color: var(--expansion);
+            background: rgba(52, 211, 153, 0.08);
+        }
+
+        .regime-badge.overheating {
+            color: var(--overheating);
+            border-color: var(--overheating);
+            background: rgba(249, 115, 22, 0.08);
+        }
+
+        .regime-badge.slowdown {
+            color: var(--slowdown);
+            border-color: var(--slowdown);
+            background: rgba(251, 191, 36, 0.08);
+        }
+
+        .regime-badge.recession {
+            color: var(--recession);
+            border-color: var(--recession);
+            background: rgba(248, 113, 113, 0.08);
+        }
 
         .composite-score {
             font-size: 0.85rem;
             color: var(--text-muted);
         }
+
         .composite-score span {
             font-weight: 600;
             color: var(--text);
@@ -124,7 +168,10 @@
             align-items: center;
             margin-bottom: 0.75rem;
         }
-        .score-row:last-child { margin-bottom: 0; }
+
+        .score-row:last-child {
+            margin-bottom: 0;
+        }
 
         .score-label {
             width: 90px;
@@ -137,7 +184,7 @@
         .score-track {
             flex: 1;
             height: 8px;
-            background: rgba(255,255,255,0.06);
+            background: rgba(255, 255, 255, 0.06);
             border-radius: 4px;
             overflow: hidden;
             position: relative;
@@ -149,6 +196,7 @@
             transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
         }
+
         .score-fill::after {
             content: '';
             position: absolute;
@@ -172,11 +220,72 @@
         }
 
         /* Score color coding */
-        .score-fill.growth    { background: linear-gradient(90deg, #34d399, #6ee7b7); }
-        .score-fill.inflation { background: linear-gradient(90deg, #f97316, #fb923c); }
-        .score-fill.liquidity { background: linear-gradient(90deg, #38bdf8, #7dd3fc); }
-        .score-fill.sentiment { background: linear-gradient(90deg, #a78bfa, #c4b5fd); }
-        .score-fill.risk      { background: linear-gradient(90deg, #f87171, #fca5a5); }
+        .score-fill.growth {
+            background: linear-gradient(90deg, #34d399, #6ee7b7);
+        }
+
+        .score-fill.inflation {
+            background: linear-gradient(90deg, #f97316, #fb923c);
+        }
+
+        .score-fill.liquidity {
+            background: linear-gradient(90deg, #38bdf8, #7dd3fc);
+        }
+
+        .score-fill.sentiment {
+            background: linear-gradient(90deg, #a78bfa, #c4b5fd);
+        }
+
+        .score-fill.risk {
+            background: linear-gradient(90deg, #f87171, #fca5a5);
+        }
+
+        /* Indicator Grid */
+        .indicator-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .indicator-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .indicator-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.4rem;
+        }
+
+        .indicator-value {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .indicator-change {
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .change-up {
+            color: var(--expansion);
+        }
+
+        .change-down {
+            color: var(--recession);
+        }
+
+        .change-neutral {
+            color: var(--text-muted);
+        }
 
         /* Allocation Ring */
         .alloc-container {
@@ -204,7 +313,7 @@
             fill: transparent;
             stroke-width: 28;
             transition: stroke-dasharray 0.8s cubic-bezier(0.4, 0, 0.2, 1),
-                        stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+                stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .alloc-legend {
@@ -270,7 +379,7 @@
             width: 100%;
             height: 6px;
             background: linear-gradient(90deg,
-                #f87171 0%, #fbbf24 25%, #a3e635 50%, #34d399 75%, #22d3ee 100%);
+                    #f87171 0%, #fbbf24 25%, #a3e635 50%, #34d399 75%, #22d3ee 100%);
             border-radius: 3px;
             margin-top: 1rem;
             position: relative;
@@ -284,7 +393,7 @@
             background: white;
             border-radius: 50%;
             transform: translateX(-50%);
-            box-shadow: 0 0 8px rgba(255,255,255,0.5);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
             transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
@@ -312,7 +421,11 @@
             margin: 0 auto 1rem;
         }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
         .error-msg {
             text-align: center;
@@ -337,12 +450,22 @@
 
         /* Responsive */
         @media (max-width: 640px) {
-            .grid-2 { grid-template-columns: 1fr; }
-            .alloc-container { flex-direction: column; gap: 1.5rem; }
-            header h1 { font-size: 1.4rem; }
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .alloc-container {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            header h1 {
+                font-size: 1.4rem;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
@@ -365,42 +488,44 @@
     </div>
 
     <script>
-    (async function() {
-        const $content = document.getElementById('content');
-        const $updated = document.getElementById('updatedAt');
+        (async function () {
+            const $content = document.getElementById('content');
+            const $updated = document.getElementById('updatedAt');
 
-        try {
-            const resp = await fetch('data.json');
-            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-            const data = await resp.json();
-            render(data);
-        } catch (e) {
-            $content.innerHTML = `<div class="error-msg">Failed to load data: ${e.message}</div>`;
-        }
+            try {
+                const resp = await fetch('data.json');
+                if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+                const data = await resp.json();
+                render(data);
+            } catch (e) {
+                $content.innerHTML = `<div class="error-msg">Failed to load data: ${e.message}</div>`;
+            }
 
-        function render(d) {
-            /* Timestamp */
-            const ts = new Date(d.timestamp);
-            $updated.textContent = `Last updated: ${ts.toLocaleString('en-US', {
-                year: 'numeric', month: 'short', day: 'numeric',
-                hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
-            })}`;
+            function render(d) {
+                /* Timestamp */
+                const ts = new Date(d.timestamp);
+                $updated.textContent = `Last updated: ${ts.toLocaleString('en-US', {
+                    year: 'numeric', month: 'short', day: 'numeric',
+                    hour: '2-digit', minute: '2-digit', timeZoneName: 'short'
+                })}`;
 
-            /* Build HTML */
-            const regime = d.regime.toLowerCase();
-            const scores = d.scores;
-            const alloc = d.allocation;
-            const fng = d.fng;
+                /* Build HTML */
+                const regime = d.regime.toLowerCase();
+                const scores = d.scores;
+                const alloc = d.allocation;
+                const fng = d.fng;
+                const details = d.details || {};
+                const summary = d.summary || "No commentary available for this update.";
 
-            const scoreCategories = [
-                { key: 'growth',    label: 'Growth',    cls: 'growth' },
-                { key: 'inflation', label: 'Inflation', cls: 'inflation' },
-                { key: 'liquidity', label: 'Liquidity', cls: 'liquidity' },
-                { key: 'sentiment', label: 'Sentiment', cls: 'sentiment' },
-                { key: 'risk',      label: 'Risk',      cls: 'risk' },
-            ];
+                const scoreCategories = [
+                    { key: 'growth', label: 'Growth', cls: 'growth' },
+                    { key: 'inflation', label: 'Inflation', cls: 'inflation' },
+                    { key: 'liquidity', label: 'Liquidity', cls: 'liquidity' },
+                    { key: 'sentiment', label: 'Sentiment', cls: 'sentiment' },
+                    { key: 'risk', label: 'Risk', cls: 'risk' },
+                ];
 
-            const scoreBars = scoreCategories.map(s => `
+                const scoreBars = scoreCategories.map(s => `
                 <div class="score-row">
                     <div class="score-label">${s.label}</div>
                     <div class="score-track">
@@ -410,31 +535,31 @@
                 </div>
             `).join('');
 
-            /* Donut chart */
-            const allocEntries = [
-                { key: 'stocks', label: 'Stocks', color: 'var(--stocks)' },
-                { key: 'gold',   label: 'Gold',   color: 'var(--gold)' },
-                { key: 'metals', label: 'Metals', color: 'var(--metals)' },
-                { key: 'bonds',  label: 'Bonds',  color: 'var(--bonds)' },
-                { key: 'cash',   label: 'Cash',   color: 'var(--cash)' },
-            ].filter(a => alloc[a.key] > 0);
+                /* Donut chart */
+                const allocEntries = [
+                    { key: 'stocks', label: 'Stocks', color: 'var(--stocks)' },
+                    { key: 'gold', label: 'Gold', color: 'var(--gold)' },
+                    { key: 'metals', label: 'Metals', color: 'var(--metals)' },
+                    { key: 'bonds', label: 'Bonds', color: 'var(--bonds)' },
+                    { key: 'cash', label: 'Cash', color: 'var(--cash)' },
+                ].filter(a => alloc[a.key] > 0);
 
-            const radius = 76;
-            const circumference = 2 * Math.PI * radius;
-            let cumulativeOffset = 0;
+                const radius = 76;
+                const circumference = 2 * Math.PI * radius;
+                let cumulativeOffset = 0;
 
-            const circles = allocEntries.map(a => {
-                const pct = alloc[a.key] / 100;
-                const dashLen = pct * circumference;
-                const gap = circumference - dashLen;
-                const offset = -cumulativeOffset;
-                cumulativeOffset += dashLen;
-                return `<circle cx="90" cy="90" r="${radius}"
+                const circles = allocEntries.map(a => {
+                    const pct = alloc[a.key] / 100;
+                    const dashLen = pct * circumference;
+                    const gap = circumference - dashLen;
+                    const offset = -cumulativeOffset;
+                    cumulativeOffset += dashLen;
+                    return `<circle cx="90" cy="90" r="${radius}"
                     stroke="${a.color}" stroke-dasharray="${dashLen} ${gap}"
                     stroke-dashoffset="${offset}" />`;
-            }).join('');
+                }).join('');
 
-            const legendItems = allocEntries.map(a => `
+                const legendItems = allocEntries.map(a => `
                 <div class="legend-item">
                     <div class="legend-dot" style="background:${a.color}"></div>
                     <div class="legend-name">${a.label}</div>
@@ -442,11 +567,41 @@
                 </div>
             `).join('');
 
-            /* FNG */
-            let fngHTML = '';
-            if (fng) {
-                const fngColor = fngScoreColor(fng.score);
-                fngHTML = `
+                /* Indicators */
+                const indicators = [
+                    { label: 'Unemployment', key: 'unrate', unit: '%', higherIsBetter: false },
+                    { label: 'Fed Funds Rate', key: 'fedfunds', unit: '%', higherIsBetter: null },
+                    { label: 'Yield Curve', key: 'yield_curve', unit: '', higherIsBetter: true },
+                    { label: 'HY Spread', key: 'hy_spread', unit: '', higherIsBetter: false },
+                    { label: 'Ind. Production', key: 'indpro', unit: '', higherIsBetter: true },
+                ];
+
+                const indicatorHTML = indicators.map(ind => {
+                    const data = details[ind.key];
+                    if (!data) return '';
+                    const formatVal = ind.unit === '%' ? data.value.toFixed(2) : data.value.toFixed(2);
+                    const formatChg = data.change > 0 ? `+${data.change.toFixed(2)}` : data.change.toFixed(2);
+
+                    let changeClass = 'change-neutral';
+                    if (ind.higherIsBetter !== null) {
+                        if (data.change > 0) changeClass = ind.higherIsBetter ? 'change-up' : 'change-down';
+                        else if (data.change < 0) changeClass = ind.higherIsBetter ? 'change-down' : 'change-up';
+                    }
+
+                    return `
+                    <div class="indicator-card">
+                        <div class="indicator-label">${ind.label}</div>
+                        <div class="indicator-value">${formatVal}${ind.unit}</div>
+                        <div class="indicator-change ${changeClass}">${formatChg}</div>
+                    </div>
+                `;
+                }).join('');
+
+                /* FNG */
+                let fngHTML = '';
+                if (fng) {
+                    const fngColor = fngScoreColor(fng.score);
+                    fngHTML = `
                 <div class="card">
                     <div class="card-title">Fear &amp; Greed Index</div>
                     <div class="fng-section">
@@ -460,9 +615,14 @@
                         <div class="fng-indicator" style="left:${fng.score}%"></div>
                     </div>
                 </div>`;
-            }
+                }
 
-            $content.innerHTML = `
+                $content.innerHTML = `
+                <div class="card">
+                    <div class="card-title">Market Commentary</div>
+                    <p class="commentary">${summary}</p>
+                </div>
+
                 <div class="card regime-section">
                     <div class="card-title">Current Regime</div>
                     <div class="regime-badge ${regime}">${d.regime}</div>
@@ -491,17 +651,25 @@
                 </div>
 
                 ${fngHTML}
-            `;
-        }
 
-        function fngScoreColor(score) {
-            if (score <= 25) return 'var(--recession)';
-            if (score <= 45) return 'var(--slowdown)';
-            if (score <= 55) return 'var(--text-muted)';
-            if (score <= 75) return 'var(--expansion)';
-            return 'var(--overheating)';
-        }
-    })();
+                <div class="card">
+                    <div class="card-title">Analysis Breakdown</div>
+                    <div class="indicator-grid">
+                        ${indicatorHTML}
+                    </div>
+                </div>
+            `;
+            }
+
+            function fngScoreColor(score) {
+                if (score <= 25) return 'var(--recession)';
+                if (score <= 45) return 'var(--slowdown)';
+                if (score <= 55) return 'var(--text-muted)';
+                if (score <= 75) return 'var(--expansion)';
+                return 'var(--overheating)';
+            }
+        })();
     </script>
 </body>
+
 </html>

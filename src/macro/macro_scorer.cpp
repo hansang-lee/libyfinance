@@ -479,5 +479,42 @@ nlohmann::json MacroScorer::analyzeJson(const std::string& apiKey, const std::st
         result["fng"] = nullptr;
     }
 
+    /* Details and Summary */
+    nlohmann::json details = nlohmann::json::object();
+    auto           addDetail = [&](const std::string& key, const std::string& id) {
+        if (fredData.count(id)) {
+            const auto& series = fredData.at(id);
+            double      val    = latestValue(series);
+            double      roc    = rateOfChange(series);
+            details[key]       = {{"value", val}, {"change", roc}};
+        }
+    };
+
+    addDetail("unrate", "UNRATE");
+    addDetail("payems", "PAYEMS");
+    addDetail("indpro", "INDPRO");
+    addDetail("cpi", "CPIAUCSL");
+    addDetail("fedfunds", "FEDFUNDS");
+    addDetail("yield_curve", "T10Y2Y");
+    addDetail("hy_spread", "BAMLH0A0HYM2");
+
+    result["details"] = details;
+
+    std::string summary;
+    if (regime == Regime::Expansion) {
+        summary = "The economy is in an expansionary phase. Growth indicators are generally robust while inflation "
+                  "remains within target bounds. This environment typically favors risk assets like stocks.";
+    } else if (regime == Regime::Overheating) {
+        summary = "Signs of overheating are emerging. Strong growth is being coupled with rising inflationary pressure. "
+                  "Monetary tightening or market volatility may follow as the cycle matures.";
+    } else if (regime == Regime::Slowdown) {
+        summary = "Economic momentum is decelerating. While not yet in a recession, growth indicators are weakening "
+                  "and risk factors are rising. A more cautious asset allocation is recommended.";
+    } else if (regime == Regime::Recession) {
+        summary = "The analysis suggests recessionary conditions. Growth is contracting, and financial stress "
+                  "indicators are likely high. Capital preservation and defensive positioning are paramount.";
+    }
+    result["summary"] = summary;
+
     return result;
 }
