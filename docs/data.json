@@ -8,8 +8,8 @@
   },
   "details": {
     "cpi": {
-      "change": 0.5570000000000164,
-      "value": 326.588
+      "change": 0.8719999999999573,
+      "value": 327.46
     },
     "fedfunds": {
       "change": 0.0,
@@ -38,17 +38,17 @@
   },
   "fng": {
     "rating": "fear",
-    "score": 30.5792207792208
+    "score": 27.0515769944341
   },
   "regime": "SLOWDOWN",
   "scores": {
-    "composite": 41.6,
+    "composite": 40.6,
     "growth": 42.0,
-    "inflation": 78.5,
+    "inflation": 82.4,
     "liquidity": 53.5,
     "risk": 34.9,
-    "sentiment": 20.6
+    "sentiment": 18.9
   },
   "summary": "Economic momentum is decelerating. While not yet in a recession, growth indicators are weakening and risk factors are rising. A more cautious asset allocation is recommended.",
-  "timestamp": "2026-03-10T14:59:39Z"
+  "timestamp": "2026-03-11T14:56:05Z"
 }
