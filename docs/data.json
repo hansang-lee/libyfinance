@@ -37,18 +37,18 @@
     }
   },
   "fng": {
-    "rating": "extreme fear",
-    "score": 20.9428571428571
+    "rating": "fear",
+    "score": 28.8285714285714
   },
   "regime": "OVERHEATING",
   "scores": {
-    "composite": 51.0,
+    "composite": 51.6,
     "growth": 73.2,
     "inflation": 75.7,
     "liquidity": 65.7,
     "risk": 38.2,
-    "sentiment": 16.0
+    "sentiment": 19.9
   },
   "summary": "Signs of overheating are emerging. Strong growth is being coupled with rising inflationary pressure. Monetary tightening or market volatility may follow as the cycle matures.",
-  "timestamp": "2026-04-07T15:19:36Z"
+  "timestamp": "2026-04-08T15:21:03Z"
 }
