@@ -16,8 +16,8 @@
       "value": 3.64
     },
     "hy_spread": {
-      "change": -0.25,
-      "value": 2.94
+      "change": -0.2599999999999998,
+      "value": 2.93
     },
     "indpro": {
       "change": -0.5541999999999945,
@@ -38,17 +38,17 @@
   },
   "fng": {
     "rating": "greed",
-    "score": 63.7714285714286
+    "score": 65.4285714285714
   },
   "regime": "OVERHEATING",
   "scores": {
-    "composite": 46.2,
+    "composite": 46.4,
     "growth": 69.6,
     "inflation": 100.0,
     "liquidity": 54.4,
-    "risk": 36.3,
-    "sentiment": 34.6
+    "risk": 36.2,
+    "sentiment": 35.5
   },
   "summary": "Signs of overheating are emerging. Strong growth is being coupled with rising inflationary pressure. Monetary tightening or market volatility may follow as the cycle matures.",
-  "timestamp": "2026-04-29T15:59:03Z"
+  "timestamp": "2026-04-30T15:50:31Z"
 }
