@@ -38,17 +38,17 @@
   },
   "fng": {
     "rating": "greed",
-    "score": 66.6
+    "score": 64.0857142857143
   },
   "regime": "OVERHEATING",
   "scores": {
-    "composite": 46.4,
+    "composite": 46.3,
     "growth": 69.6,
     "inflation": 100.0,
     "liquidity": 54.4,
     "risk": 36.2,
-    "sentiment": 36.1
+    "sentiment": 34.8
   },
   "summary": "Signs of overheating are emerging. Strong growth is being coupled with rising inflationary pressure. Monetary tightening or market volatility may follow as the cycle matures.",
-  "timestamp": "2026-05-03T14:56:47Z"
+  "timestamp": "2026-05-04T16:05:38Z"
 }
