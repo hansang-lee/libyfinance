@@ -1,10 +1,10 @@
 {
   "allocation": {
-    "bonds": 20,
-    "cash": 15,
-    "gold": 15,
-    "metals": 10,
-    "stocks": 40
+    "bonds": 30,
+    "cash": 10,
+    "gold": 25,
+    "metals": 5,
+    "stocks": 30
   },
   "details": {
     "cpi": {
@@ -38,17 +38,17 @@
   },
   "fng": {
     "rating": "greed",
-    "score": 64.0857142857143
+    "score": 67.0285714285714
   },
-  "regime": "OVERHEATING",
+  "regime": "SLOWDOWN",
   "scores": {
-    "composite": 46.3,
+    "composite": 45.0,
     "growth": 69.6,
     "inflation": 100.0,
-    "liquidity": 54.4,
+    "liquidity": 46.8,
     "risk": 36.2,
-    "sentiment": 34.8
+    "sentiment": 36.3
   },
-  "summary": "Signs of overheating are emerging. Strong growth is being coupled with rising inflationary pressure. Monetary tightening or market volatility may follow as the cycle matures.",
-  "timestamp": "2026-05-04T16:05:38Z"
+  "summary": "Economic momentum is decelerating. While not yet in a recession, growth indicators are weakening and risk factors are rising. A more cautious asset allocation is recommended.",
+  "timestamp": "2026-05-05T16:01:10Z"
 }
