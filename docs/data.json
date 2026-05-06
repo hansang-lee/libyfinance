@@ -1,16 +1,12 @@
 {
   "allocation": {
-    "bonds": 30,
+    "bonds": 5,
     "cash": 10,
-    "gold": 25,
-    "metals": 5,
-    "stocks": 30
+    "gold": 5,
+    "metals": 10,
+    "stocks": 70
   },
   "details": {
-    "cpi": {
-      "change": 2.833000000000027,
-      "value": 330.293
-    },
     "fedfunds": {
       "change": 0.0,
       "value": 3.64
@@ -18,10 +14,6 @@
     "hy_spread": {
       "change": -0.2599999999999998,
       "value": 2.93
-    },
-    "indpro": {
-      "change": -0.5541999999999945,
-      "value": 101.7898
     },
     "payems": {
       "change": 178.0,
@@ -38,17 +30,17 @@
   },
   "fng": {
     "rating": "greed",
-    "score": 67.0285714285714
+    "score": 68.7714285714286
   },
-  "regime": "SLOWDOWN",
+  "regime": "EXPANSION",
   "scores": {
-    "composite": 45.0,
-    "growth": 69.6,
-    "inflation": 100.0,
-    "liquidity": 46.8,
+    "composite": 60.4,
+    "growth": 72.4,
+    "inflation": 52.8,
+    "liquidity": 72.5,
     "risk": 36.2,
-    "sentiment": 36.3
+    "sentiment": 37.1
   },
-  "summary": "Economic momentum is decelerating. While not yet in a recession, growth indicators are weakening and risk factors are rising. A more cautious asset allocation is recommended.",
-  "timestamp": "2026-05-05T16:01:10Z"
+  "summary": "The economy is in an expansionary phase. Growth indicators are generally robust while inflation remains within target bounds. This environment typically favors risk assets like stocks.",
+  "timestamp": "2026-05-06T16:04:40Z"
 }
