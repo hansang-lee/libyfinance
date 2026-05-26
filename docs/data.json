@@ -16,8 +16,8 @@
       "value": 3.64
     },
     "hy_spread": {
-      "change": -0.2599999999999998,
-      "value": 2.93
+      "change": -0.14000000000000012,
+      "value": 2.79
     },
     "indpro": {
       "change": 0.6903000000000077,
@@ -38,17 +38,17 @@
   },
   "fng": {
     "rating": "greed",
-    "score": 58.5714285714286
+    "score": 60.0571428571429
   },
   "regime": "SLOWDOWN",
   "scores": {
-    "composite": 43.7,
+    "composite": 44.7,
     "growth": 62.7,
     "inflation": 100.0,
-    "liquidity": 54.4,
-    "risk": 36.2,
-    "sentiment": 29.3
+    "liquidity": 57.5,
+    "risk": 35.1,
+    "sentiment": 30.0
   },
   "summary": "Economic momentum is decelerating. While not yet in a recession, growth indicators are weakening and risk factors are rising. A more cautious asset allocation is recommended.",
-  "timestamp": "2026-05-25T16:27:10Z"
+  "timestamp": "2026-05-26T17:30:14Z"
 }
