@@ -32,23 +32,23 @@
       "value": 4.3
     },
     "yield_curve": {
-      "change": -0.030000000000000027,
-      "value": 0.49
+      "change": -0.12,
+      "value": 0.37
     }
   },
   "fng": {
     "rating": "fear",
-    "score": 28.1428571428571
+    "score": 26.6285714285714
   },
   "regime": "SLOWDOWN",
   "scores": {
-    "composite": 43.7,
+    "composite": 43.4,
     "growth": 62.8,
     "inflation": 100.0,
     "liquidity": 64.5,
-    "risk": 34.9,
-    "sentiment": 14.1
+    "risk": 36.1,
+    "sentiment": 13.3
   },
   "summary": "Economic momentum is decelerating. While not yet in a recession, growth indicators are weakening and risk factors are rising. A more cautious asset allocation is recommended.",
-  "timestamp": "2026-06-24T16:27:18Z"
+  "timestamp": "2026-06-25T16:30:23Z"
 }
