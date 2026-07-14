@@ -1,15 +1,15 @@
 {
   "allocation": {
-    "bonds": 20,
-    "cash": 15,
-    "gold": 15,
+    "bonds": 5,
+    "cash": 10,
+    "gold": 5,
     "metals": 10,
-    "stocks": 40
+    "stocks": 70
   },
   "details": {
     "cpi": {
-      "change": 1.5720000000000027,
-      "value": 333.979
+      "change": -1.4110000000000014,
+      "value": 332.568
     },
     "fedfunds": {
       "change": 0.0,
@@ -38,17 +38,17 @@
   },
   "fng": {
     "rating": "fear",
-    "score": 43.8857142857143
+    "score": 43.9714285714286
   },
-  "regime": "OVERHEATING",
+  "regime": "EXPANSION",
   "scores": {
-    "composite": 45.8,
+    "composite": 65.8,
     "growth": 67.5,
-    "inflation": 100.0,
+    "inflation": 0.0,
     "liquidity": 64.5,
     "risk": 36.2,
-    "sentiment": 21.9
+    "sentiment": 22.0
   },
-  "summary": "Signs of overheating are emerging. Strong growth is being coupled with rising inflationary pressure. Monetary tightening or market volatility may follow as the cycle matures.",
-  "timestamp": "2026-07-13T16:39:04Z"
+  "summary": "The economy is in an expansionary phase. Growth indicators are generally robust while inflation remains within target bounds. This environment typically favors risk assets like stocks.",
+  "timestamp": "2026-07-14T15:36:12Z"
 }
