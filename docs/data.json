@@ -20,8 +20,8 @@
       "value": 2.73
     },
     "indpro": {
-      "change": 0.1384999999999934,
-      "value": 102.6475
+      "change": 0.07890000000000441,
+      "value": 102.6395
     },
     "payems": {
       "change": 57.0,
@@ -37,18 +37,18 @@
     }
   },
   "fng": {
-    "rating": "neutral",
-    "score": 47.2571428571429
+    "rating": "fear",
+    "score": 38.4
   },
   "regime": "EXPANSION",
   "scores": {
-    "composite": 66.1,
-    "growth": 67.5,
+    "composite": 65.3,
+    "growth": 67.2,
     "inflation": 0.0,
     "liquidity": 64.5,
     "risk": 36.2,
-    "sentiment": 23.6
+    "sentiment": 19.2
   },
   "summary": "The economy is in an expansionary phase. Growth indicators are generally robust while inflation remains within target bounds. This environment typically favors risk assets like stocks.",
-  "timestamp": "2026-07-16T15:41:49Z"
+  "timestamp": "2026-07-17T15:19:24Z"
 }
