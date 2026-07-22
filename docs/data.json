@@ -38,17 +38,17 @@
   },
   "fng": {
     "rating": "fear",
-    "score": 40.7428571428571
+    "score": 43.5142857142857
   },
   "regime": "EXPANSION",
   "scores": {
-    "composite": 65.5,
+    "composite": 65.7,
     "growth": 67.2,
     "inflation": 0.0,
     "liquidity": 64.5,
     "risk": 36.2,
-    "sentiment": 20.4
+    "sentiment": 21.8
   },
   "summary": "The economy is in an expansionary phase. Growth indicators are generally robust while inflation remains within target bounds. This environment typically favors risk assets like stocks.",
-  "timestamp": "2026-07-21T15:47:39Z"
+  "timestamp": "2026-07-22T15:45:55Z"
 }
