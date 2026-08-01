@@ -32,23 +32,23 @@
       "value": 4.2
     },
     "yield_curve": {
-      "change": 0.010000000000000009,
-      "value": 0.37
+      "change": 0.020000000000000018,
+      "value": 0.38
     }
   },
   "fng": {
     "rating": "fear",
-    "score": 41.2
+    "score": 42.4571428571429
   },
   "regime": "EXPANSION",
   "scores": {
-    "composite": 70.0,
+    "composite": 70.1,
     "growth": 67.2,
     "inflation": 0.0,
     "liquidity": 86.8,
-    "risk": 36.2,
-    "sentiment": 20.6
+    "risk": 36.1,
+    "sentiment": 21.2
   },
   "summary": "The economy is in an expansionary phase. Growth indicators are generally robust while inflation remains within target bounds. This environment typically favors risk assets like stocks.",
-  "timestamp": "2026-07-31T16:04:58Z"
+  "timestamp": "2026-08-01T15:07:28Z"
 }
