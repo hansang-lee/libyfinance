@@ -8,8 +8,8 @@
   },
   "details": {
     "cpi": {
-      "change": -1.4110000000000014,
-      "value": 332.568
+      "change": 0.24500000000000455,
+      "value": 332.813
     },
     "fedfunds": {
       "change": 0.0,
@@ -38,17 +38,17 @@
   },
   "fng": {
     "rating": "greed",
-    "score": 63.6
+    "score": 62.6857142857143
   },
   "regime": "EXPANSION",
   "scores": {
-    "composite": 70.8,
+    "composite": 66.7,
     "growth": 63.7,
-    "inflation": 0.0,
+    "inflation": 20.3,
     "liquidity": 86.8,
     "risk": 36.1,
-    "sentiment": 31.8
+    "sentiment": 31.3
   },
   "summary": "The economy is in an expansionary phase. Growth indicators are generally robust while inflation remains within target bounds. This environment typically favors risk assets like stocks.",
-  "timestamp": "2026-08-11T15:06:27Z"
+  "timestamp": "2026-08-12T15:04:41Z"
 }
