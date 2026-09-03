@@ -38,17 +38,17 @@
   },
   "fng": {
     "rating": "fear",
-    "score": 33.6285714285714
+    "score": 35.2
   },
   "regime": "SLOWDOWN",
   "scores": {
-    "composite": 56.8,
+    "composite": 56.9,
     "growth": 64.4,
     "inflation": 42.6,
     "liquidity": 65.2,
     "risk": 34.9,
-    "sentiment": 21.1
+    "sentiment": 21.9
   },
   "summary": "Economic momentum is decelerating. While not yet in a recession, growth indicators are weakening and risk factors are rising. A more cautious asset allocation is recommended.",
-  "timestamp": "2026-09-02T17:49:49Z"
+  "timestamp": "2026-09-03T17:46:24Z"
 }
